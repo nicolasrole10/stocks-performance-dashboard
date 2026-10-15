@@ -10,7 +10,7 @@ Columnas:
 
 | columna | qué va | ejemplo |
 |---|---|---|
-| id | identificador único | t19 |
+| id | identificador único | t20 |
 | date | fecha AAAA-MM-DD | 2026-10-20 |
 | ticker | ticker de Yahoo Finance | TSLA |
 | side | `buy` o `sell` | buy |
@@ -23,8 +23,8 @@ Columnas:
 Ejemplos:
 
 ```
-t19,2026-10-20,TSLA,buy,250,100,,dada,Nueva idea
-t20,2026-10-22,NU,sell,16,,0.5,dada,Vendí la mitad
+t20,2026-10-20,TSLA,buy,250,100,,dada,Nueva idea
+t21,2026-10-22,NU,sell,16,,0.5,dada,Vendí la mitad
 ```
 
 Para quitar una operación, borra su fila.

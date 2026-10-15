@@ -9,7 +9,7 @@ t07,2026-05-15,NU,buy,12.19,100,,estimada,Compra adicional después de resultado
 t08,2026-05-20,UBER,buy,74,100,,dada,Compra inicial
 t09,2026-05-27,V,buy,321,100,,dada,Compra inicial
 t10,2026-06-02,NU,buy,11.93,100,,estimada,Compra adicional después de la salida del CFO
-t11,2026-06-12,MA,buy,490,100,,estimada,Compra inicial
+t11,2026-06-12,MA,buy,490,100,,estimada,Compra adicional
 t12,2026-08-06,META,buy,590,100,,estimada,Compra adicional
 t13,2026-08-24,NFLX,buy,80,100,,estimada,Compra inicial
 t14,2026-08-28,APP,buy,337.5,100,,dada,Compra inicial
@@ -17,3 +17,4 @@ t15,2026-09-21,APP,buy,330,100,,estimada,Compra adicional después de ganancias 
 t16,2026-09-30,APP,buy,290,100,,estimada,Compra adicional después de la demanda a Unity
 t17,2026-04-30,MSFT,buy,407.78,100,,estimada,Compra adicional después de resultados Q1
 t18,2026-07-30,META,buy,539.03,100,,estimada,Compra después de resultados Q2
+t19,2026-03-27,MA,buy,484.24,100,,estimada,Compra inicial
