@@ -52,6 +52,7 @@ html, body { margin: 0; background: #0b0e14; }
 .lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
 .lx-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
 .lx-table th.n, .lx-table td.n { text-align: right; }
+.lx-table tfoot td { border-top: 2px solid var(--cds-border); border-bottom: 0; }
 .lx-table td.wrap { white-space: normal; min-width: 12rem; color: var(--color-fg-muted); }
 .lx-tag { font-size: 0.7rem; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
 .lx input[type=search] { font: inherit; font-size: var(--cds-font-size-caption); padding: 4px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); max-width: 100%; }
@@ -70,7 +71,7 @@ html, body { margin: 0; background: #0b0e14; }
     <img class="lx-hero" src="assets/comunidad.jpg" width="1600" height="898" alt="Comunidad Leones de Wall Street. Las grandes inversiones empiezan acá">
     <h1>Ideas de El León de Wall Street</h1>
     <p class="lx-take" id="takeaway">
-      Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ, contando todas las compras y ventas.
+      Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="ret" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ, con los mismos aportes en cada uno.
       Datos al cierre del <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.
     </p>
   </header>
@@ -78,18 +79,18 @@ html, body { margin: 0; background: #0b0e14; }
   <section id="overall" class="lx-grid" aria-label="Resumen">
     <div class="lx-card lx-kpi main" id="kpi-portfolio">
       <div class="lx-label">Ideas de El León · retorno desde la primera idea</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=portfolio" data-fmt="pct" data-signed>+00.0%</div>
       <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>, con todas las compras y ventas</div>
       <div class="lx-sub">Ganancia <span data-source="summary" data-field="pnl" data-where="series=portfolio" data-fmt="susd" data-signed></span> sobre <span data-source="summary" data-field="invested" data-where="series=portfolio" data-fmt="usd0"></span> invertidos</div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-spy">
-      <div class="lx-label">S&amp;P 500 · mismo periodo</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-label">S&amp;P 500 · mismos aportes</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
       <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-qqq">
-      <div class="lx-label">QQQ · mismo periodo</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-label">QQQ · mismos aportes</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
       <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
   </section>
@@ -98,7 +99,7 @@ html, body { margin: 0; background: #0b0e14; }
     <div class="lx-head">
       <div>
         <h2>Retorno acumulado vs S&amp;P 500 y QQQ</h2>
-        <p class="lx-note">Retorno %: el portafolio medido como un fondo (sin que los nuevos aportes inflen el resultado) vs el precio de SPY y QQQ desde la primera idea. Ganancia $: tus aportes vs los mismos aportes en SPY y QQQ. Las marcas en la base son tus operaciones.</p>
+        <p class="lx-note">Retorno %: ganancia dividida entre lo invertido, para las ideas y para los mismos aportes (mismos días, mismos montos) puestos en SPY y QQQ. Ganancia $: lo mismo en dólares. Las marcas en la base son tus operaciones.</p>
       </div>
       <div class="lx-tabs" role="group" aria-label="Medida">
         <button type="button" data-mode="pct" aria-pressed="true">Retorno %</button>
@@ -122,10 +123,13 @@ html, body { margin: 0; background: #0b0e14; }
           <th data-field="first_date">Primera compra</th>
           <th class="n" data-field="sell_price">Precio de venta</th>
           <th class="n" data-field="price">Precio hoy</th>
+          <th class="n" data-field="invested">Total invertido</th>
+          <th class="n" data-field="pnl">Total ganado</th>
           <th class="n" data-field="ret">Rentabilidad</th>
           <th class="n" data-field="spy_ret">S&amp;P mismo periodo</th>
         </tr></thead>
         <tbody></tbody>
+        <tfoot></tfoot>
       </table>
     </div>
   </section>
@@ -159,9 +163,8 @@ html, body { margin: 0; background: #0b0e14; }
     <ul>
       <li>Portafolio modelo: cada compra es de $100. Las ideas se pueden recomprar y vender en parte o por completo.</li>
       <li>Retorno de cada idea = (valor actual + lo cobrado en ventas − lo invertido) / lo invertido. Una idea vendida, como AMD, queda con el precio de venta, no con el precio de hoy.</li>
-      <li>Retorno de las ideas (tarjeta, titular y gráfico): una sola medida desde la primera idea, con todas las compras y ventas. Se calcula ponderado por tiempo, como se mide un fondo, para que los nuevos aportes no inflen ni diluyan el resultado.</li>
-      <li>S&amp;P 500 y QQQ: cambio de precio de SPY y QQQ desde la misma fecha de la primera idea, sin dividendos.</li>
-      <li>Ganancia en dólares: lo que valen hoy las ideas más lo cobrado en ventas, menos lo invertido. En la pestaña "Ganancia $" del gráfico se compara contra poner los mismos aportes, los mismos días, en SPY y QQQ.</li>
+      <li>Retorno de las ideas (titular, tarjetas y gráfico): ganancia dividida entre lo invertido, desde la primera idea. Ganancia = valor actual de las ideas + lo cobrado en ventas − lo invertido.</li>
+      <li>S&amp;P 500 y QQQ: el mismo cálculo poniendo los mismos aportes, los mismos días y por los mismos montos en SPY y QQQ, y vendiendo cuando se vende una idea. Sin dividendos.</li>
       <li>Precios de cierre diarios de Yahoo Finance; el valor de hoy usa el último cierre disponible.</li>
       <li>Contenido educativo, no es recomendación de inversión.</li>
     </ul>
@@ -225,18 +228,16 @@ dash.calc('curve', {
   const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
   const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
   const sh = {}, bench = {SPY: 0, QQQ: 0}, back = {SPY: 0, QQQ: 0};
-  let invested = 0, realized = 0, i = 0, prevV = 0, twr = 1, f0 = null;
+  let invested = 0, realized = 0, i = 0;
   const rows = [];
   for (const p of days) {
     if (p.date < ts[0].date) continue;
-    let flow = 0;
     while (i < ts.length && ts[i].date <= p.date) {
       const t = ts[i++], px = num(t.price), buy = t.side === 'buy';
       const qty = buy ? num(t.usd) / px : num(t.fraction) != null ? sh[t.ticker] * num(t.fraction) : num(t.usd) / px;
       const cash = qty * px;
       sh[t.ticker] = (sh[t.ticker] || 0) + (buy ? qty : -qty);
       if (buy) invested += cash; else realized += cash;
-      flow += buy ? cash : -cash;
       for (const k of ['SPY', 'QQQ']) {
         bench[k] += (buy ? cash : -cash) / num(p[k]);
         if (!buy) back[k] += cash;
@@ -244,16 +245,12 @@ dash.calc('curve', {
     }
     let value = 0;
     for (const t in sh) value += sh[t] * num(p[t]);
-    twr *= value / (prevV + flow);
-    prevV = value;
-    f0 ||= p;
     const bv = (k) => bench[k] * num(p[k]);
     const r = (v, rz) => (v + rz - invested) / invested;
     rows.push({
       date: p.date, invested, value, realized,
       pnl: value + realized - invested,
-      portfolio: twr - 1, spy: num(p.SPY) / num(f0.SPY) - 1, qqq: num(p.QQQ) / num(f0.QQQ) - 1,
-      dollar_ret: r(value, realized),
+      portfolio: r(value, realized), spy: r(bv('SPY'), back.SPY), qqq: r(bv('QQQ'), back.QQQ),
       spy_pnl: bv('SPY') + back.SPY - invested, qqq_pnl: bv('QQQ') + back.QQQ - invested,
     });
   }
@@ -304,20 +301,14 @@ dash.calc('summary', {
   title: 'Resumen general',
   description: 'Retorno de las ideas desde la primera idea (ponderado por tiempo) y cambio de SPY y QQQ desde la misma fecha, con ganancia en dólares.',
   fn: (curve, positions, prices, trades) => {
-  const avg = (f) => positions.reduce((s, r) => s + r[f], 0) / positions.length;
   const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
   const end = days[days.length - 1], c = curve[curve.length - 1], first = curve[0].date;
-  const yr = Number(end.date.slice(0, 4)), y1 = (yr - 1) + end.date.slice(4);
-  const at = (d) => [...days].reverse().find((p) => p.date <= d);
-  const base = at(yr - 1 + '-12-31'), b1 = at(y1);
-  const f0 = at(first);
-  const idx = (k) => ({first_index: Number(end[k]) / Number(f0[k]) - 1, ytd_index: Number(end[k]) / Number(base[k]) - 1, y1_index: Number(end[k]) / Number(b1[k]) - 1});
   const ok = trades.length;
   return [
-    {series: 'portfolio', invested: c.invested, value: c.value, realized: c.realized, pnl: c.pnl, twr: c.portfolio, avg_ret: avg('ret'), ideas: positions.length,
-      asof: end.date, first_date: first, y1_from: (Number(first.slice(0, 4)) + 1) + first.slice(4), trades: ok},
-    {series: 'spy', invested: c.invested, pnl: c.spy_pnl, avg_ret: avg('spy_ret'), ...idx('SPY')},
-    {series: 'qqq', invested: c.invested, pnl: c.qqq_pnl, avg_ret: avg('qqq_ret'), ...idx('QQQ')},
+    {series: 'portfolio', invested: c.invested, value: c.value, realized: c.realized, pnl: c.pnl, ret: c.portfolio, ideas: positions.length,
+      asof: end.date, first_date: first, trades: ok},
+    {series: 'spy', invested: c.invested, pnl: c.spy_pnl, ret: c.spy},
+    {series: 'qqq', invested: c.invested, pnl: c.qqq_pnl, ret: c.qqq},
   ];
 },
 });
@@ -361,7 +352,7 @@ const anyErr = (...ids) => ids.some((i) => ['error', 'missing', 'connect', 'decl
 function drawPositions() {
   const tb = root.querySelector('#tbl-pos tbody');
   if (anyErr('positions')) return failBox(tb.parentElement.parentElement, 'Failed to load');
-  if (!okAll('positions')) return;
+  if (!okAll('positions', 'summary')) return;
   tb.replaceChildren(...[...dash.data('positions').data].sort((a, b) => b.ret - a.ret).map((r) => {
     const tr = document.createElement('tr');
     tr.dataset.key = r.ticker;
@@ -373,10 +364,23 @@ function drawPositions() {
     }
     td(tr, r.sell_price == null ? '' : fmt.usd(r.sell_price), 'n');
     td(tr, r.status === 'abierta' ? fmt.usd(r.price) : '', 'n');
+    td(tr, fmt.usd0(r.invested), 'n');
+    td(tr, fmt.susd(r.pnl), signCls(r.pnl));
     td(tr, fmt.pct(r.ret), signCls(r.ret));
     td(tr, fmt.pct(r.spy_ret), signCls(r.spy_ret));
     return tr;
   }));
+  const sm = dash.data('summary').data, pf = sm.find((r) => r.series === 'portfolio'), sp = sm.find((r) => r.series === 'spy');
+  if (!pf || !sp) return;
+  const ft = root.querySelector('#tbl-pos tfoot'), tr = document.createElement('tr');
+  td(tr, 'Total');
+  for (let i = 0; i < 4; i++) td(tr, '');
+  td(tr, fmt.usd0(pf.invested), 'n');
+  td(tr, fmt.susd(pf.pnl), signCls(pf.pnl));
+  td(tr, fmt.pct(pf.ret), signCls(pf.ret));
+  td(tr, fmt.pct(sp.ret), signCls(sp.ret));
+  tr.querySelectorAll('td').forEach((c) => (c.style.fontWeight = 'var(--cds-font-weight-medium)'));
+  ft.replaceChildren(tr);
 }
 
 function drawTrades() {
