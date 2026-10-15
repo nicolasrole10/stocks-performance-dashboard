@@ -1,0 +1,17 @@
+id,date,ticker,side,price,usd,fraction,date_basis,note
+t01,2026-01-16,GOOGL,buy,330,100,,estimada,Fecha buscada por precio
+t02,2026-02-12,MSFT,buy,390,100,,dada,
+t03,2026-02-14,NVDA,buy,180,100,,dada,Sabado: se toma el siguiente dia de mercado
+t04,2026-03-04,NU,buy,15,100,,estimada,Fecha buscada por precio
+t05,2026-03-06,AMD,buy,192,100,,dada,
+t06,2026-05-15,AMD,sell,424,,1,estimada,Venta total a 424; fecha buscada por precio
+t07,2026-05-15,NU,buy,12.19,100,,estimada,Recompra post resultados Q1; fecha buscada
+t08,2026-05-20,UBER,buy,74,100,,dada,
+t09,2026-05-27,V,buy,321,100,,dada,
+t10,2026-06-02,NU,buy,11.93,100,,estimada,Recompra en la caida por salida del CFO
+t11,2026-06-12,MA,buy,490,100,,estimada,Fecha buscada por precio
+t12,2026-08-06,META,buy,590,100,,estimada,Fecha buscada por precio
+t13,2026-08-24,NFLX,buy,80,100,,estimada,Venta ya hecha pero sin precio/fecha registrados
+t14,2026-08-28,APP,buy,337.5,100,,dada,Precio dado; el cierre ese dia fue 317.76
+t15,2026-09-21,APP,buy,330,100,,estimada,Compra adicional; fecha buscada por precio
+t16,2026-09-30,APP,buy,290,100,,estimada,Compra adicional; fecha buscada por precio

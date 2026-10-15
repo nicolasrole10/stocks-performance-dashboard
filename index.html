@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideas de El León de Wall Street</title>
+<meta name="description" content="Las ideas de inversión de El León de Wall Street, con compras, ventas y rendimiento vs S&amp;P 500 y QQQ.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+:root { --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; --font-anthropic-serif: "Source Serif 4", Georgia, serif;
+  --cds-font-size-caption: 0.8125rem; --cds-font-size-body: 0.9375rem; --cds-font-size-heading: 1.0625rem; --cds-font-size-title: 1.75rem; --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-lg: 18px; --cds-radius: 10px; --cds-dur-slow: .3s; }
+html, body { margin: 0; background: #0b0e14; }
+@keyframes lx-pulse { 50% { opacity: .5; } }
+.dash-skeleton { color: transparent !important; background: #1c2230; border-radius: 6px; animation: lx-pulse 1.4s infinite; }
+.lx-foot { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); text-align: center; }
+.lx-foot a { color: var(--color-fg-muted); }
+.lx-wrap { --color-bg: #0b0e14; --color-panel: #141922; --color-fg: #e8ebf1; --color-fg-muted: #9aa4b5; --color-border-line: #252c3a; --color-ok: #4fd19a; --color-bad: #ff7b7b; --cds-chart-grid: #1f2633; --cds-chart-axis: #3a4457; --cds-chart-reference: #6b7589; --cds-surface-popover: #1c2230; --cds-border: #333d50; --cds-text-secondary: #9aa4b5; --cds-shadow-popover: 0 6px 20px rgba(0,0,0,.55); background: var(--color-bg); color: var(--color-fg); color-scheme: dark; padding: 24px clamp(12px, 3vw, 32px); min-height: 100vh; }
+.lx { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1100px; margin-inline: auto; display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
+.lx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+.lx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.lx-take { margin: 4px 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
+.lx-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.lx-grid2 { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 36rem), 1fr)); }
+.lx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.lx-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: 0; line-height: 1.45; }
+.lx-label { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.lx-big { font-family: var(--font-anthropic-serif); font-size: 2.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; min-height: 2.6rem; }
+.lx-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.lx-sub span { color: var(--color-fg); }
+.lx .pos { color: var(--color-ok); }
+.lx .neg { color: var(--color-bad); }
+.lx-kpi.main { border-color: var(--color-fg-muted); }
+.lx-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.lx-tabs { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.lx-tabs button { font: inherit; font-size: var(--cds-font-size-caption); background: transparent; color: var(--color-fg-muted); border: 0; padding: 4px 10px; cursor: pointer; }
+.lx-tabs button[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); }
+.lx-chart { position: relative; min-height: 340px; }
+.lx-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--cds-font-size-caption); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.lx-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+.lx-plot { position: relative; min-height: 300px; }
+.lx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); display: none; z-index: 3; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lx-tip .d { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.lx-tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.lx-tip .t { color: var(--cds-text-secondary); margin-top: 3px; }
+.lx-chart svg text { fill: var(--color-fg-muted); }
+.lx-bars { display: flex; flex-direction: column; gap: 8px; min-height: 200px; }
+.lx-bar { display: grid; grid-template-columns: 3.6rem 1fr 3.4rem; align-items: center; gap: 8px; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.lx-bar .track { height: 14px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); border-radius: 7px; overflow: hidden; }
+.lx-bar .fill { height: 100%; border-radius: 7px; background: var(--color-fg); }
+.lx-bar b { font-weight: var(--cds-font-weight-medium); }
+.lx-bar span:last-child { text-align: right; }
+.lx-scroll { overflow: auto; max-height: 26rem; }
+.lx-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.lx-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.lx-table th.n, .lx-table td.n { text-align: right; }
+.lx-table td.wrap { white-space: normal; min-width: 12rem; color: var(--color-fg-muted); }
+.lx-tag { font-size: 0.7rem; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
+.lx input[type=search] { font: inherit; font-size: var(--cds-font-size-caption); padding: 4px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); max-width: 100%; }
+.lx ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+.lx-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 120px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.lx-fail::before { content: ''; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+@media (max-width: 520px) { .lx-big { font-size: 2rem; } }
+</style>
+
+</head>
+<body>
+<div class="lx-wrap"><div class="lx" id="dash-page">
+  <header id="top">
+    <h1>Ideas de El León de Wall Street</h1>
+    <p class="lx-take" id="takeaway">
+      En promedio cada idea rinde <b data-source="summary" data-field="avg_ret" data-where="series=portfolio" data-fmt="pct" data-signed></b> desde que se habló, frente a <b data-source="summary" data-field="avg_ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="avg_ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ en esas mismas ventanas.
+      El S&amp;P 500 va <b data-source="summary" data-field="ytd_index" data-where="series=spy" data-fmt="pct" data-signed></b> en el año. Datos al cierre del <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.
+    </p>
+  </header>
+
+  <section id="overall" class="lx-grid" aria-label="Resumen">
+    <div class="lx-card lx-kpi main" id="kpi-portfolio">
+      <div class="lx-label">Ideas de El León · retorno promedio por idea</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="avg_ret" data-where="series=portfolio" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Cada idea desde su compra, incluyendo recompras y ventas</div>
+      <div class="lx-sub">Portafolio completo desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed></span></div>
+      <div class="lx-sub">Ganancia <span data-source="summary" data-field="pnl" data-where="series=portfolio" data-fmt="susd" data-signed></span> sobre <span data-source="summary" data-field="invested" data-where="series=portfolio" data-fmt="usd0"></span> invertidos</div>
+      <div class="lx-sub">Retorno a 1 año: disponible desde el <span data-source="summary" data-field="y1_from" data-where="series=portfolio" data-fmt="date"></span></div>
+    </div>
+    <div class="lx-card lx-kpi" id="kpi-spy">
+      <div class="lx-label">S&amp;P 500 · retorno YTD</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="ytd_index" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Mismas ventanas que las ideas (promedio): <span data-source="summary" data-field="avg_ret" data-where="series=spy" data-fmt="pct" data-signed></span></div>
+      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed></span></div>
+      <div class="lx-sub">A 1 año: <span data-source="summary" data-field="y1_index" data-where="series=spy" data-fmt="pct" data-signed></span></div>
+    </div>
+    <div class="lx-card lx-kpi" id="kpi-qqq">
+      <div class="lx-label">QQQ · retorno YTD</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="ytd_index" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Mismas ventanas que las ideas (promedio): <span data-source="summary" data-field="avg_ret" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
+      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
+      <div class="lx-sub">A 1 año: <span data-source="summary" data-field="y1_index" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
+    </div>
+  </section>
+
+  <section id="curve-section" class="lx-card">
+    <div class="lx-head">
+      <div>
+        <h2>Retorno acumulado vs S&amp;P 500 y QQQ</h2>
+        <p class="lx-note">Retorno %: el portafolio medido como un fondo (sin que los nuevos aportes inflen el resultado) vs el precio de SPY y QQQ desde la primera idea. Ganancia $: tus aportes vs los mismos aportes en SPY y QQQ. Las marcas en la base son tus operaciones.</p>
+      </div>
+      <div class="lx-tabs" role="group" aria-label="Medida">
+        <button type="button" data-mode="pct" aria-pressed="true">Retorno %</button>
+        <button type="button" data-mode="usd" aria-pressed="false">Ganancia $</button>
+      </div>
+    </div>
+    <div class="lx-chart" id="curve-chart" data-source="curve trades">
+      <div class="lx-legend" id="curve-legend"></div>
+      <div class="lx-plot dash-skeleton" id="curve-plot"></div>
+    </div>
+  </section>
+
+  <section id="portfolio-section" class="lx-grid2">
+    <div class="lx-card" id="alloc-card">
+      <h2>Desglose del portafolio</h2>
+      <p class="lx-note">Peso de cada idea abierta por valor actual de mercado.</p>
+      <div class="lx-bars" id="alloc" data-source="positions"></div>
+    </div>
+    <div class="lx-card" id="pos-card">
+      <h2>Rendimiento por idea</h2>
+      <p class="lx-note">Incluye compras adicionales y ventas ya cobradas. Retorno = (valor actual + ventas − invertido) / invertido.</p>
+      <div class="lx-scroll">
+        <table class="lx-table" id="tbl-pos" data-source="positions" data-row-key="ticker">
+          <thead><tr>
+            <th data-field="ticker">Idea</th>
+            <th data-field="status">Estado</th>
+            <th class="n" data-field="invested">Invertido</th>
+            <th class="n" data-field="avg_cost">Costo prom.</th>
+            <th class="n" data-field="sell_price">Venta prom.</th>
+            <th class="n" data-field="price">Precio hoy</th>
+            <th class="n" data-field="value">Valor</th>
+            <th class="n" data-field="pnl">Ganancia</th>
+            <th class="n" data-field="ret">Retorno</th>
+            <th class="n" data-field="spy_ret">S&amp;P mismo periodo</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="trades-section" class="lx-card">
+    <div class="lx-head">
+      <div>
+        <h2>Compras y ventas</h2>
+        <p class="lx-note">Cada compra es de $100 al precio que se mencionó. "est." marca fechas que no se tenían y se buscaron por el precio.</p>
+      </div>
+      <input type="search" id="trade-q" placeholder="Buscar idea" aria-label="Buscar idea">
+    </div>
+    <div class="lx-scroll">
+      <table class="lx-table" id="tbl-trades" data-source="trades" data-row-key="id">
+        <thead><tr>
+          <th data-field="id">#</th>
+          <th data-field="date">Fecha</th>
+          <th data-field="ticker">Idea</th>
+          <th data-field="side">Operación</th>
+          <th class="n" data-field="price">Precio</th>
+          <th class="n" data-field="usd">Monto</th>
+          <th data-field="note">Nota</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="method" class="lx-card">
+    <h2>Cómo se calcula</h2>
+    <ul>
+      <li>Portafolio modelo: cada compra es de $100. Las ideas se pueden recomprar y vender en parte o por completo.</li>
+      <li>Retorno de cada idea = (valor actual + lo cobrado en ventas − lo invertido) / lo invertido. Una idea vendida, como AMD, queda con el precio de venta, no con el precio de hoy.</li>
+      <li>Retorno promedio por idea: el promedio simple de todas las ideas, abiertas y vendidas.</li>
+      <li>"Mismas ventanas": para cada idea se simula comprar SPY o QQQ el mismo día y por el mismo monto (y vender cuando la idea se vende); luego se promedia.</li>
+      <li>"Portafolio completo" es retorno ponderado por tiempo, como se mide un fondo: comparable con el S&amp;P 500 desde la primera idea.</li>
+      <li>YTD y 1 año de SPY y QQQ: cambio de precio, sin dividendos. El retorno a 1 año del portafolio aparece cuando la primera idea cumpla un año.</li>
+      <li>Precios de cierre diarios de Yahoo Finance; el valor de hoy usa el último cierre disponible.</li>
+      <li>NFLX sigue como idea abierta hasta registrar su venta.</li>
+      <li>Contenido educativo, no es recomendación de inversión.</li>
+    </ul>
+  </section>
+  <p class="lx-foot">Precios de cierre de Yahoo Finance, actualizados automáticamente cada día hábil. Último cierre: <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.</p>
+</div>
+</div>
+
+<script>
+// Mini runtime: carga los CSV de /data y calcula todo en el navegador.
+window.dash = (() => {
+  const state = {}, calcs = [], subs = [];
+  const colors = ['#f2c14e', '#7cb2ff', '#c792ea'];
+  const run = () => subs.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
+  const data = (id) => state[id] || {status: 'loading', data: []};
+  const load = async () => {
+    try {
+      const v = '?v=' + Date.now();
+      const [prices, trades] = await Promise.all([d3.csv('data/prices.csv' + v), d3.csv('data/trades.csv' + v)]);
+      state.prices = {status: 'ok', data: prices};
+      state.trades = {status: 'ok', data: trades};
+      for (const c of calcs) state[c.id] = {status: 'ok', data: c.fn(...c.inputs.map((i) => state[i].data))};
+    } catch (e) {
+      console.error(e);
+      for (const id of ['prices', 'trades', ...calcs.map((c) => c.id)]) state[id] = {status: 'error', data: [], message: String(e)};
+    }
+    run();
+  };
+  let t;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(run, 150); });
+  setTimeout(load, 0);
+  return {
+    colors, data,
+    calc: (id, o) => calcs.push({id, ...o}),
+    onData: (fn) => { subs.push(fn); fn(); },
+  };
+})();
+</script>
+<script>
+const root = document.getElementById('dash-page');
+const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const fDate = (s) => { const [y, m, d] = s.split('-'); return `${+d} ${MES[m - 1]} ${y}`; };
+const fmt = {
+  pct: d3.format('+.1%'), usd: d3.format('$,.2f'), usd0: d3.format('$,.0f'),
+  susd: d3.format('+$,.2f'), date: fDate,
+};
+let mode = 'pct';
+const COLORS = ['#f2c14e', '#7cb2ff', '#c792ea'];
+const SER = [
+  {key: 'portfolio', pnl: 'pnl', name: 'Ideas de El León', color: 0, w: 2.5},
+  {key: 'spy', pnl: 'spy_pnl', name: 'S&P 500', color: 1, w: 1.8},
+  {key: 'qqq', pnl: 'qqq_pnl', name: 'QQQ', color: 2, w: 1.8},
+];
+
+dash.calc('curve', {
+  inputs: ['prices', 'trades'],
+  title: 'Retorno acumulado diario',
+  description: 'Cada día de mercado desde la primera idea: retorno del portafolio ponderado por tiempo, precio de SPY y QQQ, y ganancia en dólares con los mismos aportes.',
+  fn: (prices, trades) => {
+  const num = (x) => (x === '' || x == null ? null : Number(x));
+  const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
+  const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const sh = {}, bench = {SPY: 0, QQQ: 0}, back = {SPY: 0, QQQ: 0};
+  let invested = 0, realized = 0, i = 0, prevV = 0, twr = 1, f0 = null;
+  const rows = [];
+  for (const p of days) {
+    if (p.date < ts[0].date) continue;
+    let flow = 0;
+    while (i < ts.length && ts[i].date <= p.date) {
+      const t = ts[i++], px = num(t.price), buy = t.side === 'buy';
+      const qty = buy ? num(t.usd) / px : num(t.fraction) != null ? sh[t.ticker] * num(t.fraction) : num(t.usd) / px;
+      const cash = qty * px;
+      sh[t.ticker] = (sh[t.ticker] || 0) + (buy ? qty : -qty);
+      if (buy) invested += cash; else realized += cash;
+      flow += buy ? cash : -cash;
+      for (const k of ['SPY', 'QQQ']) {
+        bench[k] += (buy ? cash : -cash) / num(p[k]);
+        if (!buy) back[k] += cash;
+      }
+    }
+    let value = 0;
+    for (const t in sh) value += sh[t] * num(p[t]);
+    twr *= value / (prevV + flow);
+    prevV = value;
+    f0 ||= p;
+    const bv = (k) => bench[k] * num(p[k]);
+    const r = (v, rz) => (v + rz - invested) / invested;
+    rows.push({
+      date: p.date, invested, value, realized,
+      pnl: value + realized - invested,
+      portfolio: twr - 1, spy: num(p.SPY) / num(f0.SPY) - 1, qqq: num(p.QQQ) / num(f0.QQQ) - 1,
+      dollar_ret: r(value, realized),
+      spy_pnl: bv('SPY') + back.SPY - invested, qqq_pnl: bv('QQQ') + back.QQQ - invested,
+    });
+  }
+  return rows;
+},
+});
+dash.calc('positions', {
+  inputs: ['prices', 'trades'],
+  title: 'Posiciones por idea',
+  description: 'Invertido, valor actual, ventas cobradas y retorno de cada idea con el último cierre.',
+  fn: (prices, trades) => {
+  const num = (x) => (x === '' || x == null ? null : Number(x));
+  const last = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1)).pop();
+  const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
+  const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const close = (d, k) => num(days.find((p) => p.date >= d)[k]);
+  const by = {};
+  for (const t of ts) {
+    const a = (by[t.ticker] ||= {ticker: t.ticker, invested: 0, shares: 0, cost: 0, realized: 0, bought: 0, sold: 0, spy: 0, qqq: 0, back: 0, first_date: t.date, trades: 0});
+    const px = num(t.price);
+    a.trades++;
+    if (t.side === 'buy') {
+      const q = num(t.usd) / px;
+      a.invested += num(t.usd); a.shares += q; a.cost += num(t.usd); a.bought += q;
+      a.spy += num(t.usd) / close(t.date, 'SPY'); a.qqq += num(t.usd) / close(t.date, 'QQQ');
+    } else {
+      const q = num(t.fraction) != null ? a.shares * num(t.fraction) : num(t.usd) / px;
+      a.cost -= a.cost * (q / a.shares); a.shares -= q; a.realized += q * px; a.sold += q;
+      a.spy -= (q * px) / close(t.date, 'SPY'); a.qqq -= (q * px) / close(t.date, 'QQQ'); a.back += q * px;
+    }
+  }
+  const rows = Object.values(by).map((a) => {
+    const open = a.shares > 1e-9, price = num(last[a.ticker]), value = open ? a.shares * price : 0;
+    const pnl = value + a.realized - a.invested;
+    return {ticker: a.ticker, status: open ? 'abierta' : 'vendida', first_date: a.first_date, trades: a.trades,
+      invested: a.invested, shares: open ? a.shares : 0, avg_cost: open ? a.cost / a.shares : a.invested / a.bought, sell_price: a.sold > 0 ? a.realized / a.sold : null,
+      price, value, realized: a.realized, pnl, ret: pnl / a.invested,
+      spy_ret: (a.spy * num(last.SPY) + a.back - a.invested) / a.invested,
+      qqq_ret: (a.qqq * num(last.QQQ) + a.back - a.invested) / a.invested};
+  });
+  const total = rows.reduce((s, r) => s + r.value, 0);
+  rows.forEach((r) => (r.weight = r.value / total));
+  return rows;
+},
+});
+dash.calc('summary', {
+  inputs: ['curve', 'positions', 'prices', 'trades'],
+  title: 'Resumen general',
+  description: 'Retorno promedio por idea y de SPY y QQQ en las mismas ventanas, retorno del portafolio ponderado por tiempo, y cambio de SPY y QQQ en el año y a 1 año.',
+  fn: (curve, positions, prices, trades) => {
+  const avg = (f) => positions.reduce((s, r) => s + r[f], 0) / positions.length;
+  const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const end = days[days.length - 1], c = curve[curve.length - 1], first = curve[0].date;
+  const yr = Number(end.date.slice(0, 4)), y1 = (yr - 1) + end.date.slice(4);
+  const at = (d) => [...days].reverse().find((p) => p.date <= d);
+  const base = at(yr - 1 + '-12-31'), b1 = at(y1);
+  const f0 = at(first);
+  const idx = (k) => ({first_index: Number(end[k]) / Number(f0[k]) - 1, ytd_index: Number(end[k]) / Number(base[k]) - 1, y1_index: Number(end[k]) / Number(b1[k]) - 1});
+  const ok = trades.length;
+  return [
+    {series: 'portfolio', invested: c.invested, value: c.value, realized: c.realized, pnl: c.pnl, twr: c.portfolio, avg_ret: avg('ret'), ideas: positions.length,
+      asof: end.date, first_date: first, y1_from: (Number(first.slice(0, 4)) + 1) + first.slice(4), trades: ok},
+    {series: 'spy', invested: c.invested, pnl: c.spy_pnl, avg_ret: avg('spy_ret'), ...idx('SPY')},
+    {series: 'qqq', invested: c.invested, pnl: c.qqq_pnl, avg_ret: avg('qqq_ret'), ...idx('QQQ')},
+  ];
+},
+});
+
+function fillMarks() {
+  root.querySelectorAll('[data-fmt]').forEach((el) => {
+    const d = dash.data(el.dataset.source);
+    if (d.status === 'loading') return;
+    el.classList.remove('dash-skeleton');
+    if (d.status !== 'ok') { el.textContent = ''; return; }
+    const where = [...new URLSearchParams(el.dataset.where || '')];
+    const row = d.data.find((r) => where.every(([k, v]) => String(r[k]) === v));
+    const v = row ? row[el.dataset.field] : null;
+    if (v == null) { el.textContent = ''; return; }
+    el.textContent = fmt[el.dataset.fmt](v);
+    if (el.hasAttribute('data-signed')) {
+      el.classList.toggle('pos', v >= 0);
+      el.classList.toggle('neg', v < 0);
+    }
+  });
+}
+
+function td(tr, text, cls) {
+  const c = document.createElement('td');
+  c.textContent = text;
+  if (cls) c.className = cls;
+  tr.append(c);
+  return c;
+}
+const signCls = (v) => (v >= 0 ? 'n pos' : 'n neg');
+
+function failBox(el, msg) {
+  const f = document.createElement('div');
+  f.className = 'lx-fail';
+  f.textContent = msg;
+  el.replaceChildren(f);
+}
+const okAll = (...ids) => ids.every((i) => dash.data(i).status === 'ok');
+const anyErr = (...ids) => ids.some((i) => ['error', 'missing', 'connect', 'declined'].includes(dash.data(i).status));
+
+function drawAlloc() {
+  const box = document.getElementById('alloc');
+  if (anyErr('positions')) return failBox(box, 'Failed to load');
+  if (!okAll('positions')) return;
+  const open = dash.data('positions').data.filter((r) => r.status === 'abierta').sort((a, b) => b.weight - a.weight);
+  const max = open.length ? open[0].weight : 1;
+  box.replaceChildren(...open.map((r) => {
+    const row = document.createElement('div');
+    row.className = 'lx-bar';
+    const n = document.createElement('b'); n.textContent = r.ticker;
+    const tr = document.createElement('div'); tr.className = 'track';
+    const f = document.createElement('div'); f.className = 'fill';
+    f.style.width = (r.weight / max * 100).toFixed(1) + '%';
+    f.style.background = COLORS[0];
+    tr.append(f);
+    const p = document.createElement('span'); p.textContent = d3.format('.1%')(r.weight);
+    row.append(n, tr, p);
+    return row;
+  }));
+}
+
+function drawPositions() {
+  const tb = root.querySelector('#tbl-pos tbody');
+  if (anyErr('positions')) return failBox(tb.parentElement.parentElement, 'Failed to load');
+  if (!okAll('positions')) return;
+  tb.replaceChildren(...[...dash.data('positions').data].sort((a, b) => b.ret - a.ret).map((r) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = r.ticker;
+    td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
+    td(tr, r.status);
+    td(tr, fmt.usd0(r.invested), 'n');
+    td(tr, fmt.usd(r.avg_cost), 'n');
+    td(tr, r.sell_price == null ? '' : fmt.usd(r.sell_price), 'n');
+    td(tr, r.status === 'abierta' ? fmt.usd(r.price) : '', 'n');
+    td(tr, fmt.usd(r.value), 'n');
+    td(tr, fmt.susd(r.pnl), signCls(r.pnl));
+    td(tr, fmt.pct(r.ret), signCls(r.ret));
+    td(tr, fmt.pct(r.spy_ret), signCls(r.spy_ret));
+    return tr;
+  }));
+}
+
+function drawTrades() {
+  const tb = root.querySelector('#tbl-trades tbody');
+  if (anyErr('trades')) return failBox(tb.parentElement.parentElement, 'Failed to load');
+  if (!okAll('trades')) return;
+  const q = document.getElementById('trade-q').value.trim().toLowerCase();
+  const rows = [...dash.data('trades').data]
+    .sort((a, b) => (a.date + a.id < b.date + b.id ? 1 : -1))
+    .filter((r) => !q || (r.ticker + ' ' + r.note + ' ' + r.side).toLowerCase().includes(q));
+  tb.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = r.id;
+    td(tr, r.id);
+    const dc = td(tr, fDate(r.date));
+    if (r.date_basis === 'estimada') {
+      const t = document.createElement('span'); t.className = 'lx-tag'; t.textContent = 'est.'; dc.append(t);
+    }
+    td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
+    const buy = r.side === 'buy';
+    td(tr, buy ? 'Compra' : 'Venta', buy ? 'pos' : 'neg');
+    td(tr, fmt.usd(Number(r.price)), 'n');
+    td(tr, buy ? fmt.usd0(Number(r.usd)) : (r.fraction !== '' ? d3.format('.0%')(Number(r.fraction)) + ' de la posición' : fmt.usd0(Number(r.usd))), 'n');
+    td(tr, r.note, 'wrap');
+    return tr;
+  }));
+}
+
+const tipBox = document.createElement('div');
+tipBox.className = 'lx-tip';
+
+function drawChart() {
+  const plot = document.getElementById('curve-plot');
+  const legend = document.getElementById('curve-legend');
+  if (anyErr('curve', 'trades')) { plot.classList.remove('dash-skeleton'); legend.replaceChildren(); return failBox(plot, 'Failed to load'); }
+  if (!okAll('curve', 'trades')) return;
+  plot.classList.remove('dash-skeleton');
+  const rows = dash.data('curve').data.map((r) => ({...r, t: new Date(r.date + 'T00:00:00Z')}));
+  const trades = dash.data('trades').data;
+  if (!rows.length) return;
+  const val = (r, s) => (mode === 'pct' ? r[s.key] : r[s.pnl]);
+  const last = rows[rows.length - 1];
+  const yfmt = mode === 'pct' ? d3.format('+.0%') : d3.format('+$,.0f');
+  const vfmt = mode === 'pct' ? fmt.pct : fmt.susd;
+
+  legend.replaceChildren(...SER.map((s) => {
+    const el = document.createElement('span');
+    const i = document.createElement('i'); i.style.background = COLORS[s.color];
+    const v = document.createElement('b'); v.textContent = vfmt(val(last, s));
+    v.className = val(last, s) >= 0 ? 'pos' : 'neg';
+    el.append(i, s.name + ' ', v);
+    return el;
+  }));
+
+  const W = Math.max(plot.clientWidth, 280), H = W < 480 ? 250 : 320;
+  const m = {t: 10, r: 14, b: 40, l: 40};
+  plot.replaceChildren();
+  const svg = d3.select(plot).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+    .attr('aria-label', 'Retorno acumulado del portafolio, S&P 500 y QQQ');
+  const all = rows.flatMap((r) => SER.map((s) => val(r, s)));
+  const y = d3.scaleLinear().domain([Math.min(0, d3.min(all)), Math.max(0, d3.max(all))]).nice().range([H - m.b, m.t]);
+  const ticks = y.ticks(5);
+  const meas = svg.append('g').selectAll('text').data(ticks).join('text').text(yfmt);
+  m.l = d3.max(meas.nodes(), (n) => n.getComputedTextLength()) + 12;
+  meas.remove();
+  const x = d3.scaleUtc().domain(d3.extent(rows, (r) => r.t)).range([m.l, W - m.r]);
+
+  svg.append('g').selectAll('line').data(ticks).join('line')
+    .attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y)
+    .attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+  svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0))
+    .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('g').selectAll('text').data(ticks).join('text')
+    .attr('x', m.l - 6).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end')
+    .attr('font-size', 11).text(yfmt);
+  const ax = svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+    .call(d3.axisBottom(x).ticks(W < 480 ? 4 : 8).tickSizeOuter(0)
+      .tickFormat((d) => MES[d.getUTCMonth()] + ' ' + String(d.getUTCFullYear()).slice(2)));
+  ax.attr('font-size', null).attr('font-family', null);
+  ax.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11);
+  ax.selectAll('line,path').attr('stroke', 'var(--cds-chart-axis)');
+
+  SER.slice().reverse().forEach((s) => {
+    svg.append('path').datum(rows).attr('fill', 'none').attr('stroke', COLORS[s.color])
+      .attr('stroke-width', s.w).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+      .attr('d', d3.line().x((r) => x(r.t)).y((r) => y(val(r, s))));
+  });
+
+  const tdates = [...new Map(trades.map((t) => [t.date + t.side, t])).values()];
+  svg.append('g').selectAll('rect').data(tdates).join('rect')
+    .attr('x', (t) => x(new Date(t.date + 'T00:00:00Z')) - 1).attr('width', 2)
+    .attr('y', H - m.b - 7).attr('height', 7).attr('rx', 1)
+    .attr('fill', (t) => (t.side === 'buy' ? 'var(--color-ok)' : 'var(--color-bad)'));
+
+  const rule = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-reference)').style('display', 'none');
+  const dots = SER.map((s) => svg.append('circle').attr('r', 4).attr('fill', COLORS[s.color]).style('display', 'none'));
+  tipBox.style.display = 'none';
+  plot.append(tipBox);
+  const bis = d3.bisector((r) => r.t).center;
+  svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b)
+    .attr('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const px = d3.pointer(ev)[0];
+      const i = bis(rows, x.invert(px)), r = rows[i], prev = rows[i - 1];
+      rule.style('display', null).attr('x1', x(r.t)).attr('x2', x(r.t));
+      dots.forEach((d, k) => d.style('display', null).attr('cx', x(r.t)).attr('cy', y(val(r, SER[k]))));
+      const day = trades.filter((t) => t.date <= r.date && (!prev || t.date > prev.date));
+      tipBox.replaceChildren();
+      const dd = document.createElement('div'); dd.className = 'd'; dd.textContent = fDate(r.date); tipBox.append(dd);
+      SER.forEach((s) => {
+        const l = document.createElement('div');
+        const i2 = document.createElement('i'); i2.style.background = COLORS[s.color];
+        l.append(i2, s.name + ': ' + vfmt(val(r, s)));
+        tipBox.append(l);
+      });
+      day.forEach((t) => {
+        const l = document.createElement('div'); l.className = 't';
+        l.textContent = (t.side === 'buy' ? 'Compra ' : 'Venta ') + t.ticker;
+        tipBox.append(l);
+      });
+      tipBox.style.display = 'block';
+      const w = tipBox.offsetWidth;
+      tipBox.style.left = Math.max(0, Math.min(px / W * plot.clientWidth + 12, plot.clientWidth - w)) + 'px';
+      tipBox.style.top = '8px';
+    })
+    .on('pointerleave', () => {
+      rule.style('display', 'none'); dots.forEach((d) => d.style('display', 'none')); tipBox.style.display = 'none';
+    });
+}
+
+root.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => {
+  mode = b.dataset.mode;
+  root.querySelectorAll('[data-mode]').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+  drawChart();
+}));
+document.getElementById('trade-q').addEventListener('input', drawTrades);
+
+dash.onData(() => {
+  fillMarks();
+  drawAlloc();
+  drawPositions();
+  drawTrades();
+  drawChart();
+});
+
+</script>
+</body>
+</html>
