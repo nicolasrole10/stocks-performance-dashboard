@@ -47,12 +47,6 @@ html, body { margin: 0; background: #0b0e14; }
 .lx-tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 .lx-tip .t { color: var(--cds-text-secondary); margin-top: 3px; }
 .lx-chart svg text { fill: var(--color-fg-muted); }
-.lx-bars { display: flex; flex-direction: column; gap: 8px; min-height: 200px; }
-.lx-bar { display: grid; grid-template-columns: 3.6rem 1fr 3.4rem; align-items: center; gap: 8px; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
-.lx-bar .track { height: 14px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); border-radius: 7px; overflow: hidden; }
-.lx-bar .fill { height: 100%; border-radius: 7px; background: var(--color-fg); }
-.lx-bar b { font-weight: var(--cds-font-weight-medium); }
-.lx-bar span:last-child { text-align: right; }
 .lx-scroll { overflow: auto; max-height: 26rem; }
 .lx-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
 .lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
@@ -117,32 +111,22 @@ html, body { margin: 0; background: #0b0e14; }
     </div>
   </section>
 
-  <section id="portfolio-section" class="lx-grid2">
-    <div class="lx-card" id="alloc-card">
-      <h2>Desglose del portafolio</h2>
-      <p class="lx-note">Peso de cada idea abierta por valor actual de mercado.</p>
-      <div class="lx-bars" id="alloc" data-source="positions"></div>
-    </div>
-    <div class="lx-card" id="pos-card">
-      <h2>Rendimiento por idea</h2>
-      <p class="lx-note">Incluye compras adicionales y ventas ya cobradas. Retorno = (valor actual + ventas − invertido) / invertido.</p>
-      <div class="lx-scroll">
-        <table class="lx-table" id="tbl-pos" data-source="positions" data-row-key="ticker">
-          <thead><tr>
-            <th data-field="ticker">Idea</th>
-            <th data-field="status">Estado</th>
-            <th class="n" data-field="invested">Invertido</th>
-            <th class="n" data-field="avg_cost">Costo prom.</th>
-            <th class="n" data-field="sell_price">Venta prom.</th>
-            <th class="n" data-field="price">Precio hoy</th>
-            <th class="n" data-field="value">Valor</th>
-            <th class="n" data-field="pnl">Ganancia</th>
-            <th class="n" data-field="ret">Retorno</th>
-            <th class="n" data-field="spy_ret">S&amp;P mismo periodo</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
+  <section id="portfolio-section" class="lx-card">
+    <h2>Rendimiento por idea</h2>
+    <p class="lx-note">Incluye compras adicionales y ventas ya cobradas. Rentabilidad = (valor actual + ventas − invertido) / invertido. "S&amp;P mismo periodo": comprar SPY los mismos días y por los mismos montos, y vender cuando se vende la idea.</p>
+    <div class="lx-scroll">
+      <table class="lx-table" id="tbl-pos" data-source="positions" data-row-key="ticker">
+        <thead><tr>
+          <th data-field="ticker">Acción</th>
+          <th class="n" data-field="avg_cost">Precio medio</th>
+          <th data-field="first_date">Primera compra</th>
+          <th class="n" data-field="sell_price">Precio de venta</th>
+          <th class="n" data-field="price">Precio hoy</th>
+          <th class="n" data-field="ret">Rentabilidad</th>
+          <th class="n" data-field="spy_ret">S&amp;P mismo periodo</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </section>
 
@@ -289,7 +273,7 @@ dash.calc('positions', {
   const close = (d, k) => num(days.find((p) => p.date >= d)[k]);
   const by = {};
   for (const t of ts) {
-    const a = (by[t.ticker] ||= {ticker: t.ticker, invested: 0, shares: 0, cost: 0, realized: 0, bought: 0, sold: 0, spy: 0, qqq: 0, back: 0, first_date: t.date, trades: 0});
+    const a = (by[t.ticker] ||= {ticker: t.ticker, invested: 0, shares: 0, cost: 0, realized: 0, bought: 0, sold: 0, spy: 0, qqq: 0, back: 0, first_date: t.date, first_basis: t.date_basis, trades: 0});
     const px = num(t.price);
     a.trades++;
     if (t.side === 'buy') {
@@ -305,7 +289,7 @@ dash.calc('positions', {
   const rows = Object.values(by).map((a) => {
     const open = a.shares > 1e-9, price = num(last[a.ticker]), value = open ? a.shares * price : 0;
     const pnl = value + a.realized - a.invested;
-    return {ticker: a.ticker, status: open ? 'abierta' : 'vendida', first_date: a.first_date, trades: a.trades,
+    return {ticker: a.ticker, status: open ? 'abierta' : 'vendida', first_date: a.first_date, first_basis: a.first_basis, trades: a.trades,
       invested: a.invested, shares: open ? a.shares : 0, avg_cost: open ? a.cost / a.shares : a.invested / a.bought, sell_price: a.sold > 0 ? a.realized / a.sold : null,
       price, value, realized: a.realized, pnl, ret: pnl / a.invested,
       spy_ret: (a.spy * num(last.SPY) + a.back - a.invested) / a.invested,
@@ -375,27 +359,6 @@ function failBox(el, msg) {
 const okAll = (...ids) => ids.every((i) => dash.data(i).status === 'ok');
 const anyErr = (...ids) => ids.some((i) => ['error', 'missing', 'connect', 'declined'].includes(dash.data(i).status));
 
-function drawAlloc() {
-  const box = document.getElementById('alloc');
-  if (anyErr('positions')) return failBox(box, 'Failed to load');
-  if (!okAll('positions')) return;
-  const open = dash.data('positions').data.filter((r) => r.status === 'abierta').sort((a, b) => b.weight - a.weight);
-  const max = open.length ? open[0].weight : 1;
-  box.replaceChildren(...open.map((r) => {
-    const row = document.createElement('div');
-    row.className = 'lx-bar';
-    const n = document.createElement('b'); n.textContent = r.ticker;
-    const tr = document.createElement('div'); tr.className = 'track';
-    const f = document.createElement('div'); f.className = 'fill';
-    f.style.width = (r.weight / max * 100).toFixed(1) + '%';
-    f.style.background = COLORS[0];
-    tr.append(f);
-    const p = document.createElement('span'); p.textContent = d3.format('.1%')(r.weight);
-    row.append(n, tr, p);
-    return row;
-  }));
-}
-
 function drawPositions() {
   const tb = root.querySelector('#tbl-pos tbody');
   if (anyErr('positions')) return failBox(tb.parentElement.parentElement, 'Failed to load');
@@ -404,13 +367,13 @@ function drawPositions() {
     const tr = document.createElement('tr');
     tr.dataset.key = r.ticker;
     td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
-    td(tr, r.status);
-    td(tr, fmt.usd0(r.invested), 'n');
     td(tr, fmt.usd(r.avg_cost), 'n');
+    const fc = td(tr, fDate(r.first_date));
+    if (r.first_basis === 'estimada') {
+      const t = document.createElement('span'); t.className = 'lx-tag'; t.textContent = 'est.'; fc.append(t);
+    }
     td(tr, r.sell_price == null ? '' : fmt.usd(r.sell_price), 'n');
     td(tr, r.status === 'abierta' ? fmt.usd(r.price) : '', 'n');
-    td(tr, fmt.usd(r.value), 'n');
-    td(tr, fmt.susd(r.pnl), signCls(r.pnl));
     td(tr, fmt.pct(r.ret), signCls(r.ret));
     td(tr, fmt.pct(r.spy_ret), signCls(r.spy_ret));
     return tr;
@@ -554,7 +517,6 @@ document.getElementById('trade-q').addEventListener('input', drawTrades);
 
 dash.onData(() => {
   fillMarks();
-  drawAlloc();
   drawPositions();
   drawTrades();
   drawChart();
