@@ -115,6 +115,7 @@ html, body { margin: 0; background: #0b0e14; }
       <table class="lx-table" id="tbl-pos" data-source="positions" data-row-key="ticker">
         <thead><tr>
           <th data-field="ticker">Acción</th>
+          <th data-field="held">En mi portafolio</th>
           <th class="n" data-field="avg_cost">Precio medio</th>
           <th data-field="first_date">Primera compra</th>
           <th class="n" data-field="sell_price">Precio de venta</th>
@@ -179,13 +180,14 @@ window.dash = (() => {
   const load = async () => {
     try {
       const v = '?v=' + Date.now();
-      const [prices, trades] = await Promise.all([d3.csv('data/prices.csv' + v), d3.csv('data/trades.csv' + v)]);
+      const [prices, trades, holdings] = await Promise.all([d3.csv('data/prices.csv' + v), d3.csv('data/trades.csv' + v), d3.csv('data/holdings.csv' + v)]);
       state.prices = {status: 'ok', data: prices};
       state.trades = {status: 'ok', data: trades};
+      state.holdings = {status: 'ok', data: holdings};
       for (const c of calcs) state[c.id] = {status: 'ok', data: c.fn(...c.inputs.map((i) => state[i].data))};
     } catch (e) {
       console.error(e);
-      for (const id of ['prices', 'trades', ...calcs.map((c) => c.id)]) state[id] = {status: 'error', data: [], message: String(e)};
+      for (const id of ['prices', 'trades', 'holdings', ...calcs.map((c) => c.id)]) state[id] = {status: 'error', data: [], message: String(e)};
     }
     run();
   };
@@ -248,10 +250,11 @@ dash.calc('curve', {
 },
 });
 dash.calc('positions', {
-  inputs: ['prices', 'trades'],
+  inputs: ['prices', 'trades', 'holdings'],
   title: 'Posiciones por idea',
   description: 'Invertido, valor actual, ventas cobradas y retorno de cada idea con el último cierre.',
-  fn: (prices, trades) => {
+  fn: (prices, trades, holdings) => {
+  const held = new Set(holdings.filter((h) => h.en_portafolio.trim().toLowerCase() === 'si').map((h) => h.ticker.trim()));
   const num = (x) => (x === '' || x == null ? null : Number(x));
   const last = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1)).pop();
   const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
@@ -274,7 +277,7 @@ dash.calc('positions', {
   const rows = Object.values(by).map((a) => {
     const open = a.shares > 1e-9, price = num(last[a.ticker]), value = open ? a.shares * price : 0;
     const pnl = value + a.realized - a.invested;
-    return {ticker: a.ticker, status: open ? 'abierta' : 'vendida', first_date: a.first_date, first_basis: a.first_basis, trades: a.trades,
+    return {ticker: a.ticker, held: held.has(a.ticker), status: open ? 'abierta' : 'vendida', first_date: a.first_date, first_basis: a.first_basis, trades: a.trades,
       invested: a.invested, shares: open ? a.shares : 0, avg_cost: open ? a.cost / a.shares : a.invested / a.bought, sell_price: a.sold > 0 ? a.realized / a.sold : null,
       price, value, realized: a.realized, pnl, ret: pnl / a.invested,
       spy_ret: (open ? num(last.SPY) : close(a.last_sell, 'SPY')) / close(a.first_date, 'SPY') - 1};
@@ -346,6 +349,7 @@ function drawPositions() {
     const tr = document.createElement('tr');
     tr.dataset.key = r.ticker;
     td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
+    td(tr, r.held ? 'Sí' : 'No', r.held ? 'pos' : '');
     td(tr, fmt.usd(r.avg_cost), 'n');
     td(tr, fDate(r.first_date));
     td(tr, r.sell_price == null ? '' : fmt.usd(r.sell_price), 'n');
@@ -368,7 +372,7 @@ function drawPositions() {
   if (!pf) return;
   const ft = root.querySelector('#tbl-pos tfoot'), tr = document.createElement('tr');
   td(tr, 'Total');
-  for (let i = 0; i < 4; i++) td(tr, '');
+  for (let i = 0; i < 5; i++) td(tr, '');
   td(tr, fmt.usd0(pf.invested), 'n');
   td(tr, fmt.susd(pf.pnl), signCls(pf.pnl));
   td(tr, fmt.pct(pf.ret), signCls(pf.ret));

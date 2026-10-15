@@ -10,7 +10,7 @@ Columnas:
 
 | columna | qué va | ejemplo |
 |---|---|---|
-| id | identificador único | t17 |
+| id | identificador único | t19 |
 | date | fecha AAAA-MM-DD | 2026-10-20 |
 | ticker | ticker de Yahoo Finance | TSLA |
 | side | `buy` o `sell` | buy |
@@ -23,11 +23,15 @@ Columnas:
 Ejemplos:
 
 ```
-t17,2026-10-20,TSLA,buy,250,100,,dada,Nueva idea
-t18,2026-10-22,NU,sell,16,,0.5,dada,Vendí la mitad
+t19,2026-10-20,TSLA,buy,250,100,,dada,Nueva idea
+t20,2026-10-22,NU,sell,16,,0.5,dada,Vendí la mitad
 ```
 
 Para quitar una operación, borra su fila.
+
+## Qué ideas tengo en mi portafolio
+
+Edita `data/holdings.csv`: una fila por acción con `si` o `no` en la columna `en_portafolio`. Si agregas una idea nueva en `trades.csv`, agrega también su fila aquí. Alimenta la columna "En mi portafolio" de la tabla.
 
 ## Cómo se actualiza
 
