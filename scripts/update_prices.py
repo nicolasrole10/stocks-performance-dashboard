@@ -5,6 +5,7 @@ Escribe data/prices.csv (date + una columna por ticker). Lo corre GitHub Actions
 import csv
 import datetime as dt
 import pathlib
+import time
 
 import yfinance as yf
 
@@ -17,10 +18,16 @@ with open(ROOT / "data/trades.csv", newline="") as f:
 cols = tickers + BENCH
 
 end = (dt.date.today() + dt.timedelta(days=1)).isoformat()
-df = yf.download(cols, start=START, end=end, auto_adjust=False, progress=False)["Close"]
-df = df[cols].dropna(how="all").ffill().round(2)
+for intento in range(1, 4):
+    # threads=False evita el "database is locked" del caché de yfinance
+    df = yf.download(cols, start=START, end=end, auto_adjust=False, progress=False, threads=False)["Close"]
+    df = df.reindex(columns=cols).dropna(how="all").ffill().round(2)
+    missing = [c for c in cols if df[c].isna().all()]
+    if not missing:
+        break
+    print(f"Intento {intento}: sin precios para {missing}")
+    time.sleep(5 * intento)
 
-missing = [c for c in cols if df[c].isna().all()]
 if missing:
     raise SystemExit(f"Yahoo no devolvió precios para: {missing}. Revisa el ticker en data/trades.csv.")
 
