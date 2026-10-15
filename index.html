@@ -49,6 +49,9 @@ html, body { margin: 0; background: #0b0e14; }
 .lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
 .lx-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
 .lx-table th.n, .lx-table td.n { text-align: right; }
+.lx-w { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.lx-wt { width: 70px; height: 10px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); border-radius: 5px; overflow: hidden; }
+.lx-wt div { height: 100%; border-radius: 5px; background: #f2c14e; }
 .lx-table tfoot td { border-top: 2px solid var(--cds-border); border-bottom: 0; }
 .lx-table td.wrap { white-space: normal; min-width: 12rem; color: var(--color-fg-muted); }
 .lx-tag { font-size: 0.7rem; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
@@ -107,7 +110,7 @@ html, body { margin: 0; background: #0b0e14; }
 
   <section id="portfolio-section" class="lx-card">
     <h2>Rendimiento por idea</h2>
-    <p class="lx-note">Incluye compras adicionales y ventas ya cobradas. Rentabilidad = (valor actual + ventas − invertido) / invertido. "S&amp;P mismo periodo": cambio de precio del S&amp;P 500 desde la primera compra de esa idea hasta hoy (o hasta su venta).</p>
+    <p class="lx-note">Incluye compras adicionales y ventas ya cobradas. Rentabilidad = (valor actual + ventas − invertido) / invertido. Peso: porcentaje de cada idea abierta sobre el valor actual de mercado del portafolio.</p>
     <div class="lx-scroll">
       <table class="lx-table" id="tbl-pos" data-source="positions" data-row-key="ticker">
         <thead><tr>
@@ -119,7 +122,7 @@ html, body { margin: 0; background: #0b0e14; }
           <th class="n" data-field="invested">Total invertido</th>
           <th class="n" data-field="pnl">Total ganado</th>
           <th class="n" data-field="ret">Rentabilidad</th>
-          <th class="n" data-field="spy_ret">S&amp;P mismo periodo</th>
+          <th class="n" data-field="weight">Peso en el portafolio</th>
         </tr></thead>
         <tbody></tbody>
         <tfoot></tfoot>
@@ -338,6 +341,7 @@ function drawPositions() {
   const tb = root.querySelector('#tbl-pos tbody');
   if (anyErr('positions')) return failBox(tb.parentElement.parentElement, 'Failed to load');
   if (!okAll('positions', 'summary')) return;
+  const maxW = d3.max(dash.data('positions').data, (r) => r.weight) || 1;
   tb.replaceChildren(...[...dash.data('positions').data].sort((a, b) => b.ret - a.ret).map((r) => {
     const tr = document.createElement('tr');
     tr.dataset.key = r.ticker;
@@ -349,18 +353,26 @@ function drawPositions() {
     td(tr, fmt.usd0(r.invested), 'n');
     td(tr, fmt.susd(r.pnl), signCls(r.pnl));
     td(tr, fmt.pct(r.ret), signCls(r.ret));
-    td(tr, fmt.pct(r.spy_ret), signCls(r.spy_ret));
+    const wc = td(tr, '', 'n');
+    if (r.status === 'abierta') {
+      const box = document.createElement('div'); box.className = 'lx-w';
+      const track = document.createElement('div'); track.className = 'lx-wt';
+      const fill = document.createElement('div'); fill.style.width = (r.weight / maxW * 100).toFixed(1) + '%';
+      track.append(fill);
+      const txt = document.createElement('span'); txt.textContent = d3.format('.1%')(r.weight);
+      box.append(track, txt); wc.append(box);
+    }
     return tr;
   }));
-  const sm = dash.data('summary').data, pf = sm.find((r) => r.series === 'portfolio'), sp = sm.find((r) => r.series === 'spy');
-  if (!pf || !sp) return;
+  const sm = dash.data('summary').data, pf = sm.find((r) => r.series === 'portfolio');
+  if (!pf) return;
   const ft = root.querySelector('#tbl-pos tfoot'), tr = document.createElement('tr');
   td(tr, 'Total');
   for (let i = 0; i < 4; i++) td(tr, '');
   td(tr, fmt.usd0(pf.invested), 'n');
   td(tr, fmt.susd(pf.pnl), signCls(pf.pnl));
   td(tr, fmt.pct(pf.ret), signCls(pf.ret));
-  td(tr, fmt.pct(sp.ret), signCls(sp.ret));
+  td(tr, '100.0%', 'n');
   tr.querySelectorAll('td').forEach((c) => (c.style.fontWeight = 'var(--cds-font-weight-medium)'));
   ft.replaceChildren(tr);
 }
