@@ -1,5 +1,5 @@
 id,date,ticker,side,price,usd,fraction,date_basis,note
-t01,2026-01-16,GOOGL,buy,330,100,,estimada,Compra inicial
+t01,2026-07-23,GOOGL,buy,330,100,,estimada,Compra inicial
 t02,2026-02-12,MSFT,buy,390,100,,dada,Compra inicial
 t03,2026-02-14,NVDA,buy,180,100,,dada,Compra inicial
 t04,2026-03-04,NU,buy,15,100,,estimada,Compra inicial
