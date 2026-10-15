@@ -343,10 +343,7 @@ function drawPositions() {
     tr.dataset.key = r.ticker;
     td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
     td(tr, fmt.usd(r.avg_cost), 'n');
-    const fc = td(tr, fDate(r.first_date));
-    if (r.first_basis === 'estimada') {
-      const t = document.createElement('span'); t.className = 'lx-tag'; t.textContent = 'est.'; fc.append(t);
-    }
+    td(tr, fDate(r.first_date));
     td(tr, r.sell_price == null ? '' : fmt.usd(r.sell_price), 'n');
     td(tr, r.status === 'abierta' ? fmt.usd(r.price) : '', 'n');
     td(tr, fmt.usd0(r.invested), 'n');
@@ -380,10 +377,7 @@ function drawTrades() {
     const tr = document.createElement('tr');
     tr.dataset.key = r.id;
     td(tr, r.id);
-    const dc = td(tr, fDate(r.date));
-    if (r.date_basis === 'estimada') {
-      const t = document.createElement('span'); t.className = 'lx-tag'; t.textContent = 'est.'; dc.append(t);
-    }
+    td(tr, fDate(r.date));
     td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
     const buy = r.side === 'buy';
     td(tr, buy ? 'Compra' : 'Venta', buy ? 'pos' : 'neg');
