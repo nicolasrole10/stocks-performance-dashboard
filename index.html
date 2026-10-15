@@ -19,6 +19,7 @@ html, body { margin: 0; background: #0b0e14; }
 .lx-foot a { color: var(--color-fg-muted); }
 .lx-wrap { --color-bg: #0b0e14; --color-panel: #141922; --color-fg: #e8ebf1; --color-fg-muted: #9aa4b5; --color-border-line: #252c3a; --color-ok: #4fd19a; --color-bad: #ff7b7b; --cds-chart-grid: #1f2633; --cds-chart-axis: #3a4457; --cds-chart-reference: #6b7589; --cds-surface-popover: #1c2230; --cds-border: #333d50; --cds-text-secondary: #9aa4b5; --cds-shadow-popover: 0 6px 20px rgba(0,0,0,.55); background: var(--color-bg); color: var(--color-fg); color-scheme: dark; padding: 24px clamp(12px, 3vw, 32px); min-height: 100vh; }
 .lx { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1100px; margin-inline: auto; display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
+.lx-hero { display: block; width: 100%; height: auto; aspect-ratio: 2.2 / 1; object-fit: cover; object-position: center 10%; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-lg); }
 .lx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
 .lx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
 .lx-take { margin: 4px 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
@@ -72,35 +73,30 @@ html, body { margin: 0; background: #0b0e14; }
 <body>
 <div class="lx-wrap"><div class="lx" id="dash-page">
   <header id="top">
+    <img class="lx-hero" src="assets/comunidad.jpg" width="1600" height="898" alt="Comunidad Leones de Wall Street. Las grandes inversiones empiezan acá">
     <h1>Ideas de El León de Wall Street</h1>
     <p class="lx-take" id="takeaway">
-      En promedio cada idea rinde <b data-source="summary" data-field="avg_ret" data-where="series=portfolio" data-fmt="pct" data-signed></b> desde que se habló, frente a <b data-source="summary" data-field="avg_ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="avg_ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ en esas mismas ventanas.
-      El S&amp;P 500 va <b data-source="summary" data-field="ytd_index" data-where="series=spy" data-fmt="pct" data-signed></b> en el año. Datos al cierre del <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.
+      Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ, contando todas las compras y ventas.
+      Datos al cierre del <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.
     </p>
   </header>
 
   <section id="overall" class="lx-grid" aria-label="Resumen">
     <div class="lx-card lx-kpi main" id="kpi-portfolio">
-      <div class="lx-label">Ideas de El León · retorno promedio por idea</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="avg_ret" data-where="series=portfolio" data-fmt="pct" data-signed>+00.0%</div>
-      <div class="lx-sub">Cada idea desde su compra, incluyendo recompras y ventas</div>
-      <div class="lx-sub">Portafolio completo desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed></span></div>
+      <div class="lx-label">Ideas de El León · retorno desde la primera idea</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="twr" data-where="series=portfolio" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>, con todas las compras y ventas</div>
       <div class="lx-sub">Ganancia <span data-source="summary" data-field="pnl" data-where="series=portfolio" data-fmt="susd" data-signed></span> sobre <span data-source="summary" data-field="invested" data-where="series=portfolio" data-fmt="usd0"></span> invertidos</div>
-      <div class="lx-sub">Retorno a 1 año: disponible desde el <span data-source="summary" data-field="y1_from" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-spy">
-      <div class="lx-label">S&amp;P 500 · retorno YTD</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="ytd_index" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
-      <div class="lx-sub">Mismas ventanas que las ideas (promedio): <span data-source="summary" data-field="avg_ret" data-where="series=spy" data-fmt="pct" data-signed></span></div>
-      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed></span></div>
-      <div class="lx-sub">A 1 año: <span data-source="summary" data-field="y1_index" data-where="series=spy" data-fmt="pct" data-signed></span></div>
+      <div class="lx-label">S&amp;P 500 · mismo periodo</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="first_index" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-qqq">
-      <div class="lx-label">QQQ · retorno YTD</div>
-      <div class="lx-big dash-skeleton" data-source="summary" data-field="ytd_index" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
-      <div class="lx-sub">Mismas ventanas que las ideas (promedio): <span data-source="summary" data-field="avg_ret" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
-      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>: <span data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
-      <div class="lx-sub">A 1 año: <span data-source="summary" data-field="y1_index" data-where="series=qqq" data-fmt="pct" data-signed></span></div>
+      <div class="lx-label">QQQ · mismo periodo</div>
+      <div class="lx-big dash-skeleton" data-source="summary" data-field="first_index" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
   </section>
 
@@ -179,10 +175,9 @@ html, body { margin: 0; background: #0b0e14; }
     <ul>
       <li>Portafolio modelo: cada compra es de $100. Las ideas se pueden recomprar y vender en parte o por completo.</li>
       <li>Retorno de cada idea = (valor actual + lo cobrado en ventas − lo invertido) / lo invertido. Una idea vendida, como AMD, queda con el precio de venta, no con el precio de hoy.</li>
-      <li>Retorno promedio por idea: el promedio simple de todas las ideas, abiertas y vendidas.</li>
-      <li>"Mismas ventanas": para cada idea se simula comprar SPY o QQQ el mismo día y por el mismo monto (y vender cuando la idea se vende); luego se promedia.</li>
-      <li>"Portafolio completo" es retorno ponderado por tiempo, como se mide un fondo: comparable con el S&amp;P 500 desde la primera idea.</li>
-      <li>YTD y 1 año de SPY y QQQ: cambio de precio, sin dividendos. El retorno a 1 año del portafolio aparece cuando la primera idea cumpla un año.</li>
+      <li>Retorno de las ideas (tarjeta, titular y gráfico): una sola medida desde la primera idea, con todas las compras y ventas. Se calcula ponderado por tiempo, como se mide un fondo, para que los nuevos aportes no inflen ni diluyan el resultado.</li>
+      <li>S&amp;P 500 y QQQ: cambio de precio de SPY y QQQ desde la misma fecha de la primera idea, sin dividendos.</li>
+      <li>Ganancia en dólares: lo que valen hoy las ideas más lo cobrado en ventas, menos lo invertido. En la pestaña "Ganancia $" del gráfico se compara contra poner los mismos aportes, los mismos días, en SPY y QQQ.</li>
       <li>Precios de cierre diarios de Yahoo Finance; el valor de hoy usa el último cierre disponible.</li>
       <li>NFLX sigue como idea abierta hasta registrar su venta.</li>
       <li>Contenido educativo, no es recomendación de inversión.</li>
@@ -324,7 +319,7 @@ dash.calc('positions', {
 dash.calc('summary', {
   inputs: ['curve', 'positions', 'prices', 'trades'],
   title: 'Resumen general',
-  description: 'Retorno promedio por idea y de SPY y QQQ en las mismas ventanas, retorno del portafolio ponderado por tiempo, y cambio de SPY y QQQ en el año y a 1 año.',
+  description: 'Retorno de las ideas desde la primera idea (ponderado por tiempo) y cambio de SPY y QQQ desde la misma fecha, con ganancia en dólares.',
   fn: (curve, positions, prices, trades) => {
   const avg = (f) => positions.reduce((s, r) => s + r[f], 0) / positions.length;
   const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
