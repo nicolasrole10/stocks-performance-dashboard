@@ -71,10 +71,19 @@ html, body { margin: 0; background: #0b0e14; }
     <img class="lx-hero" src="assets/comunidad.jpg" width="1600" height="898" alt="Comunidad Leones de Wall Street. Las grandes inversiones empiezan acá">
     <h1>Ideas de El León de Wall Street</h1>
     <p class="lx-take" id="takeaway">
-      Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="ret" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ en el mismo periodo.
+      Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="ret" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ, poniendo esos mismos $100 en cada índice los mismos días.
       Datos al cierre del <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.
     </p>
   </header>
+
+  <section id="explain" class="lx-card" aria-label="Qué estamos viendo">
+    <h2>¿Qué estamos viendo?</h2>
+    <ul>
+      <li>Cada vez que El León habla a fondo de una empresa como oportunidad de inversión, se simula una compra de <b>$100</b> al precio que comentó. Si la vende, se registra la venta.</li>
+      <li>La <b>rentabilidad</b> compara lo que valen hoy esas compras (más lo que ya se cobró en ventas) con lo que se invirtió.</li>
+      <li>Para saber si las ideas le ganan al mercado, hacemos lo mismo con el <b>S&amp;P 500</b> y el <b>QQQ</b>: ponemos los mismos $100 en el índice el mismo día de cada compra. Así la comparación es justa.</li>
+    </ul>
+  </section>
 
   <section id="overall" class="lx-grid" aria-label="Resumen">
     <div class="lx-card lx-kpi main" id="kpi-portfolio">
@@ -84,12 +93,12 @@ html, body { margin: 0; background: #0b0e14; }
       <div class="lx-sub">Ganancia <span data-source="summary" data-field="pnl" data-where="series=portfolio" data-fmt="susd" data-signed></span> sobre <span data-source="summary" data-field="invested" data-where="series=portfolio" data-fmt="usd0"></span> invertidos</div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-spy">
-      <div class="lx-label">S&amp;P 500 · mismo periodo</div>
+      <div class="lx-label">S&amp;P 500 · mismos aportes</div>
       <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
       <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-qqq">
-      <div class="lx-label">QQQ · mismo periodo</div>
+      <div class="lx-label">QQQ · mismos aportes</div>
       <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
       <div class="lx-sub">Desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
@@ -99,7 +108,7 @@ html, body { margin: 0; background: #0b0e14; }
     <div class="lx-head">
       <div>
         <h2>Retorno acumulado vs S&amp;P 500 y QQQ</h2>
-        <p class="lx-note">Retorno de las ideas vs cambio de precio de SPY y QQQ desde la primera idea. Las marcas en la base son tus operaciones.</p>
+        <p class="lx-note">Retorno de las ideas vs poner los mismos $100, los mismos días, en el S&amp;P 500 y el QQQ. Las marcas en la base son las compras y ventas.</p>
       </div>
     </div>
     <div class="lx-chart" id="curve-chart" data-source="curve trades">
@@ -161,7 +170,7 @@ html, body { margin: 0; background: #0b0e14; }
       <li>Portafolio modelo: cada compra es de $100. Las ideas se pueden recomprar y vender en parte o por completo.</li>
       <li>Retorno de cada idea = (valor actual + lo cobrado en ventas − lo invertido) / lo invertido. Una idea vendida, como AMD, queda con el precio de venta, no con el precio de hoy.</li>
       <li>Retorno de las ideas: (lo que valen hoy las ideas que no se han vendido + lo cobrado en las ventas − lo invertido) / lo invertido.</li>
-      <li>S&amp;P 500 y QQQ: precio de hoy / precio del día de la primera idea − 1, sin dividendos.</li>
+      <li>S&amp;P 500 y QQQ: el mismo cálculo, pero poniendo los mismos $100, el mismo día de cada compra, en SPY y QQQ (y vendiendo cuando se vende la idea). Es una comparación justa porque el dinero entra en las mismas fechas. Sin dividendos.</li>
       <li>Precios de cierre diarios de Yahoo Finance; el valor de hoy usa el último cierre disponible.</li>
       <li>Contenido educativo, no es recomendación de inversión.</li>
     </ul>
@@ -219,13 +228,13 @@ const SER = [
 dash.calc('curve', {
   inputs: ['prices', 'trades'],
   title: 'Retorno acumulado diario',
-  description: 'Cada día de mercado desde la primera idea: retorno del portafolio ponderado por tiempo, precio de SPY y QQQ, y ganancia en dólares con los mismos aportes.',
+  description: 'Cada día de mercado desde la primera idea: retorno de las ideas y de poner los mismos aportes, los mismos días, en SPY y QQQ.',
   fn: (prices, trades) => {
   const num = (x) => (x === '' || x == null ? null : Number(x));
   const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
   const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
-  const sh = {};
-  let invested = 0, realized = 0, i = 0, f0 = null;
+  const sh = {}, bench = {SPY: 0, QQQ: 0}, back = {SPY: 0, QQQ: 0};
+  let invested = 0, realized = 0, i = 0;
   const rows = [];
   for (const p of days) {
     if (p.date < ts[0].date) continue;
@@ -235,15 +244,19 @@ dash.calc('curve', {
       const cash = qty * px;
       sh[t.ticker] = (sh[t.ticker] || 0) + (buy ? qty : -qty);
       if (buy) invested += cash; else realized += cash;
+      for (const k of ['SPY', 'QQQ']) {
+        bench[k] += (buy ? cash : -cash) / num(p[k]);
+        if (!buy) back[k] += cash;
+      }
     }
     let value = 0;
     for (const t in sh) value += sh[t] * num(p[t]);
-    f0 ||= p;
+    const bv = (k) => bench[k] * num(p[k]);
     const r = (v, rz) => (v + rz - invested) / invested;
     rows.push({
       date: p.date, invested, value, realized,
       pnl: value + realized - invested,
-      portfolio: r(value, realized), spy: num(p.SPY) / num(f0.SPY) - 1, qqq: num(p.QQQ) / num(f0.QQQ) - 1,
+      portfolio: r(value, realized), spy: r(bv('SPY'), back.SPY), qqq: r(bv('QQQ'), back.QQQ),
     });
   }
   return rows;
@@ -290,7 +303,7 @@ dash.calc('positions', {
 dash.calc('summary', {
   inputs: ['curve', 'positions', 'prices', 'trades'],
   title: 'Resumen general',
-  description: 'Retorno de las ideas desde la primera idea (ponderado por tiempo) y cambio de SPY y QQQ desde la misma fecha, con ganancia en dólares.',
+  description: 'Retorno de las ideas y de los mismos aportes puestos en SPY y QQQ, con ganancia en dólares.',
   fn: (curve, positions, prices, trades) => {
   const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
   const end = days[days.length - 1], c = curve[curve.length - 1], first = curve[0].date;
