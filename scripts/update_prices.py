@@ -21,7 +21,15 @@ end = (dt.date.today() + dt.timedelta(days=1)).isoformat()
 for intento in range(1, 4):
     # threads=False evita el "database is locked" del caché de yfinance
     df = yf.download(cols, start=START, end=end, auto_adjust=False, progress=False, threads=False)["Close"]
-    df = df.reindex(columns=cols).dropna(how="all").ffill().round(2)
+    df = df.reindex(columns=cols)
+    # Yahoo a veces trae la fila de hoy con Close vacío; se completa con el último minuto
+    if df.iloc[-1].isna().all():
+        dia = df.index[-1]
+        for c in cols:
+            h = yf.Ticker(c).history(period="1d", interval="1m")
+            if len(h) and h.index[-1].date() == dia.date():
+                df.loc[dia, c] = h["Close"].iloc[-1]
+    df = df.dropna(how="all").ffill().round(2)
     missing = [c for c in cols if df[c].isna().all()]
     if not missing:
         break
