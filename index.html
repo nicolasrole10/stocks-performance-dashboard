@@ -6,62 +6,98 @@
 <title>Ideas de El León de Wall Street</title>
 <meta name="description" content="Las ideas de inversión de El León de Wall Street, con compras, ventas y rendimiento vs S&amp;P 500 y QQQ.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
-:root { --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; --font-anthropic-serif: "Source Serif 4", Georgia, serif;
-  --cds-font-size-caption: 0.8125rem; --cds-font-size-body: 0.9375rem; --cds-font-size-heading: 1.0625rem; --cds-font-size-title: 1.75rem; --cds-font-weight-medium: 600;
-  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-lg: 18px; --cds-radius: 10px; --cds-dur-slow: .3s; }
-html, body { margin: 0; background: #0b0e14; }
+:root { --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; --gap: 16px; --radius: 6px; --dur-slow: .3s; }
+html, body { margin: 0; background: #000; }
+body { -webkit-font-smoothing: antialiased; }
 @keyframes lx-pulse { 50% { opacity: .5; } }
-.dash-skeleton { color: transparent !important; background: #1c2230; border-radius: 6px; animation: lx-pulse 1.4s infinite; }
-.lx-foot { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); text-align: center; }
-.lx-foot a { color: var(--color-fg-muted); }
-.lx-wrap { --color-bg: #0b0e14; --color-panel: #141922; --color-fg: #e8ebf1; --color-fg-muted: #9aa4b5; --color-border-line: #252c3a; --color-ok: #4fd19a; --color-bad: #ff7b7b; --cds-chart-grid: #1f2633; --cds-chart-axis: #3a4457; --cds-chart-reference: #6b7589; --cds-surface-popover: #1c2230; --cds-border: #333d50; --cds-text-secondary: #9aa4b5; --cds-shadow-popover: 0 6px 20px rgba(0,0,0,.55); background: var(--color-bg); color: var(--color-fg); color-scheme: dark; padding: 24px clamp(12px, 3vw, 32px); min-height: 100vh; }
-.lx { font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1100px; margin-inline: auto; display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
-.lx-hero { display: block; width: 100%; height: auto; aspect-ratio: 2.2 / 1; object-fit: cover; object-position: center 10%; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); margin-bottom: var(--cds-gap-lg); }
-.lx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
-.lx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
-.lx-take { margin: 4px 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); line-height: 1.5; }
-.lx-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
-.lx-grid2 { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 36rem), 1fr)); }
-.lx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.lx-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: 0; line-height: 1.45; }
-.lx-label { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
-.lx-big { font-family: var(--font-anthropic-serif); font-size: 2.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; min-height: 2.6rem; }
-.lx-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.dash-skeleton { color: transparent !important; background: #2c2c2e; border-radius: 6px; animation: lx-pulse 1.4s infinite; }
+.lx-wrap { --color-bg: #000; --color-panel: #1c1c1e; --color-fg: #fff; --color-fg-muted: #98989d; --color-border-line: #2c2c2e; --color-ok: #30d158; --color-bad: #ff453a; --color-blue: #0071e3; --color-blue-text: #3b99ff; --cds-chart-grid: #2c2c2e; --cds-chart-axis: #48484a; --cds-chart-reference: #6e6e73; --cds-surface-popover: #2c2c2e; --cds-border: #3a3a3c; --cds-text-secondary: #98989d; --cds-shadow-popover: 0 6px 20px rgba(0,0,0,.6); background: var(--color-bg); color: var(--color-fg); color-scheme: dark; padding: 40px clamp(16px, 5vw, 64px) 24px; min-height: 100vh; font-family: var(--font); }
+.lx { font-family: var(--font); color: var(--color-fg); max-width: 1170px; margin-inline: auto; display: flex; flex-direction: column; gap: var(--gap); }
+.lx-hero { display: block; width: 100%; height: auto; aspect-ratio: 2.2 / 1; object-fit: cover; object-position: center 10%; border-radius: var(--radius); margin-bottom: 28px; }
+.lx-eyebrow { color: var(--color-blue-text); font-size: 1rem; font-weight: 500; margin-bottom: 10px; }
+.lx h1 { font-weight: 600; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+.lx h2 { font-size: 1.0625rem; font-weight: 500; margin: 0; color: var(--color-blue-text); }
+.lx-take { margin: 18px 0 0; color: var(--color-fg-muted); font-size: 1.125rem; font-weight: 300; line-height: 1.55; max-width: 62rem; }
+.lx-take b { color: var(--color-fg); font-weight: 500; }
+.lx-take b.pos { color: var(--color-ok); } .lx-take b.neg { color: var(--color-bad); }
+.lx-grid { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.lx-card { background: var(--color-panel); border-radius: var(--radius); padding: 26px 28px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.lx-note { color: var(--color-fg-muted); font-size: .8125rem; margin: 0; line-height: 1.5; font-weight: 300; }
+.lx-label { color: var(--color-fg); font-size: .9375rem; font-weight: 500; }
+.lx-big { font-size: 3.25rem; font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; min-height: 3.5rem; }
+.lx-name { font-size: .9375rem; font-weight: 500; }
+.lx-sub { font-size: .8125rem; color: var(--color-fg-muted); font-weight: 300; font-variant-numeric: tabular-nums; }
 .lx-sub span { color: var(--color-fg); }
 .lx .pos { color: var(--color-ok); }
 .lx .neg { color: var(--color-bad); }
-.lx-kpi.main { border-color: var(--color-fg-muted); }
+.lx-kpi.main { background: var(--color-blue); }
+.lx-kpi.main .lx-label, .lx-kpi.main .lx-big, .lx-kpi.main .lx-sub, .lx-kpi.main .lx-sub span, .lx-kpi.main .pos, .lx-kpi.main .neg { color: #fff; }
+.lx-kpi.main .lx-sub { color: rgba(255,255,255,.85); }
+.lx-kpi.main .lx-big { font-size: 4rem; }
 .lx-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.lx-sec { display: flex; flex-direction: column; gap: var(--gap); margin-top: 8px; }
+.lx-sec-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.lx-sec-title { font-size: clamp(1.75rem, 4vw, 2.25rem) !important; font-weight: 300 !important; color: var(--color-fg) !important; letter-spacing: -0.01em; }
+.lx-pill { background: var(--color-blue); color: #fff; border-radius: 999px; padding: 4px 14px; font-size: .8125rem; font-weight: 600; }
+.lx-sec-sub { color: var(--color-fg-muted); font-size: .9375rem; font-weight: 300; }
 .lx-chart { position: relative; min-height: 340px; }
-.lx-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--cds-font-size-caption); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.lx-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .8125rem; margin: 6px 0; font-variant-numeric: tabular-nums; color: var(--color-fg-muted); }
+.lx-legend b { color: var(--color-fg); font-weight: 600; }
+.lx-legend b.pos { color: var(--color-ok); } .lx-legend b.neg { color: var(--color-bad); }
 .lx-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
 .lx-plot { position: relative; min-height: 300px; }
-.lx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); display: none; z-index: 3; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--radius); box-shadow: var(--cds-shadow-popover); padding: 6px 10px; font-size: .8125rem; display: none; z-index: 3; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .lx-tip .d { color: var(--cds-text-secondary); margin-bottom: 2px; }
 .lx-tip i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
 .lx-tip .t { color: var(--cds-text-secondary); margin-top: 3px; }
 .lx-chart svg text { fill: var(--color-fg-muted); }
 .lx-scroll { overflow: auto; max-height: 26rem; }
-.lx-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
-.lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
-.lx-table td { padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.lx-table { width: 100%; border-collapse: collapse; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.lx-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: 500; color: var(--color-fg-muted); padding: 8px 10px; border-bottom: 1px solid var(--cds-border); white-space: nowrap; }
+.lx-table td { padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
 .lx-table th.n, .lx-table td.n { text-align: right; }
 .lx-w { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
-.lx-wt { width: 70px; height: 10px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); border-radius: 5px; overflow: hidden; }
-.lx-wt div { height: 100%; border-radius: 5px; background: #f2c14e; }
-.lx-table tfoot td { border-top: 2px solid var(--cds-border); border-bottom: 0; }
+.lx-wt { width: 70px; height: 4px; background: #3a3a3c; border-radius: 2px; overflow: hidden; }
+.lx-wt div { height: 100%; border-radius: 2px; background: var(--color-blue-text); }
+.lx-table tfoot td { border-top: 1px solid var(--cds-border); border-bottom: 0; }
 .lx-table td.wrap { white-space: normal; min-width: 12rem; color: var(--color-fg-muted); }
-.lx-tag { font-size: 0.7rem; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
-.lx input[type=search] { font: inherit; font-size: var(--cds-font-size-caption); padding: 4px 8px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); max-width: 100%; }
-.lx ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
-.lx-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 120px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.lx-tag { font-size: .7rem; color: var(--color-fg-muted); border: 1px solid var(--cds-border); border-radius: 999px; padding: 0 7px; margin-left: 6px; font-weight: 400; }
+.lx input[type=search] { font: inherit; font-size: .8125rem; padding: 6px 12px; border: 1px solid var(--cds-border); border-radius: 999px; background: #000; color: var(--color-fg); max-width: 100%; }
+.lx ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 6px; font-size: .875rem; font-weight: 300; color: var(--color-fg-muted); line-height: 1.55; }
+.lx ul b { color: var(--color-fg); font-weight: 500; }
+.lx-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 120px; color: var(--color-fg-muted); font-size: .8125rem; }
 .lx-fail::before { content: ''; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+.lx-key { display: flex; gap: 18px; flex-wrap: wrap; font-size: .8125rem; color: var(--color-fg-muted); }
+.lx-key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+.lx-rows { display: flex; flex-direction: column; margin-top: 8px; }
+.lx-rhead, .lx-row { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) 5.5rem 11rem; align-items: center; gap: 18px; padding: 11px 0; }
+.lx-rhead { color: var(--color-fg-muted); font-size: .8125rem; padding-top: 0; border-bottom: 1px solid var(--cds-border); }
+.lx-rhead .r { text-align: right; }
+.lx-row { border-bottom: 1px solid var(--color-border-line); font-size: .9375rem; }
+.lx-row:last-child { border-bottom: 0; }
+.lx-rname { font-weight: 600; display: flex; align-items: center; }
+.lx-rtrack { position: relative; height: 14px; }
+.lx-rzero { position: absolute; top: -6px; bottom: -6px; width: 1px; background: var(--cds-chart-axis); }
+.lx-rbar { position: absolute; top: 0; height: 14px; }
+.lx-rbar.up { background: #3987e5; border-radius: 0 4px 4px 0; }
+.lx-rbar.dn { background: #e66767; border-radius: 4px 0 0 4px; }
+.lx-rval { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.lx-rwhen { color: var(--color-fg); font-weight: 400; }
+.lx-rwhen.no { color: var(--color-fg-muted); font-weight: 300; }
+.lx-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--color-fg-muted); font-size: .75rem; font-weight: 300; margin-top: 24px; }
+.lx-foot a { color: var(--color-fg-muted); }
 [data-dash-source-state=empty] { color: transparent; }
-[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
-@media (max-width: 520px) { .lx-big { font-size: 2rem; } }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--dur-slow); }
+@media (max-width: 640px) {
+  .lx-big { font-size: 2.5rem; } .lx-kpi.main .lx-big { font-size: 3rem; }
+  .lx-card { padding: 20px; }
+  .lx-rhead, .lx-row { grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem; gap: 12px; }
+  .lx-rhead .w { display: none; }
+  .lx-rwhen { grid-column: 1 / -1; font-size: .8125rem; margin-top: -4px; }
+}
 </style>
 
 </head>
@@ -69,6 +105,7 @@ html, body { margin: 0; background: #0b0e14; }
 <div class="lx-wrap"><div class="lx" id="dash-page">
   <header id="top">
     <img class="lx-hero" src="assets/comunidad.jpg" width="1600" height="898" alt="Comunidad Leones de Wall Street. Las grandes inversiones empiezan acá">
+    <div class="lx-eyebrow">Ideas en vivo · 2026</div>
     <h1>Ideas de El León de Wall Street</h1>
     <p class="lx-take" id="takeaway">
       Desde que hablamos de la primera empresa como inversión de alto valor en la comunidad (<span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span>), las ideas rinden <b data-source="summary" data-field="ret" data-where="series=portfolio" data-fmt="pct" data-signed></b>, frente a <b data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed></b> del S&amp;P 500 y <b data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed></b> del QQQ, comprando $100 de cada índice cada semana.
@@ -93,14 +130,54 @@ html, body { margin: 0; background: #0b0e14; }
       <div class="lx-sub">Ganancia <span data-source="summary" data-field="pnl" data-where="series=portfolio" data-fmt="susd" data-signed></span> sobre <span data-source="summary" data-field="invested" data-where="series=portfolio" data-fmt="usd0"></span> invertidos</div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-spy">
-      <div class="lx-label">S&amp;P 500 · compra semanal</div>
       <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=spy" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-name">S&amp;P 500 · compra semanal</div>
       <div class="lx-sub">$100 cada semana desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
     </div>
     <div class="lx-card lx-kpi" id="kpi-qqq">
-      <div class="lx-label">QQQ · compra semanal</div>
       <div class="lx-big dash-skeleton" data-source="summary" data-field="ret" data-where="series=qqq" data-fmt="pct" data-signed>+00.0%</div>
+      <div class="lx-name">QQQ · compra semanal</div>
       <div class="lx-sub">$100 cada semana desde el <span data-source="summary" data-field="first_date" data-where="series=portfolio" data-fmt="date"></span></div>
+    </div>
+  </section>
+
+  <section id="success" class="lx-sec" aria-label="Éxito de las ideas">
+    <div class="lx-sec-head">
+      <h2 class="lx-sec-title">Éxito de las ideas</h2>
+      <span class="lx-pill">Resultados</span>
+      <span class="lx-sec-sub">Cuántas ideas ya están en verde, cuánto tardaron y cuánto rindió cada una</span>
+    </div>
+    <div class="lx-grid" id="success-kpis">
+      <div class="lx-card lx-kpi">
+        <div class="lx-big dash-skeleton" id="s-win">0 de 0</div>
+        <div class="lx-name">Ideas rentables</div>
+        <div class="lx-sub" id="s-win-sub"></div>
+      </div>
+      <div class="lx-card lx-kpi">
+        <div class="lx-big dash-skeleton" id="s-avg">+00.0%</div>
+        <div class="lx-name">Rentabilidad promedio por idea</div>
+        <div class="lx-sub" id="s-avg-sub"></div>
+      </div>
+      <div class="lx-card lx-kpi">
+        <div class="lx-big dash-skeleton" id="s-days">00 días</div>
+        <div class="lx-name">Tiempo hasta ser rentable</div>
+        <div class="lx-sub" id="s-days-sub"></div>
+      </div>
+      <div class="lx-card lx-kpi">
+        <div class="lx-big dash-skeleton" id="s-best">+000.0%</div>
+        <div class="lx-name" id="s-best-name">Mejor idea</div>
+        <div class="lx-sub" id="s-best-sub"></div>
+      </div>
+    </div>
+    <div class="lx-card" id="success-card">
+      <div class="lx-head">
+        <div>
+          <h2>Resultado de cada idea</h2>
+          <p class="lx-note">Rentabilidad total de cada idea hoy (o hasta su venta) y los días que pasaron desde la primera compra hasta que quedó en verde y no volvió a pérdida. Solo cuenta las ideas que hoy son rentables.</p>
+        </div>
+        <div class="lx-key"><span><i style="background:#3987e5"></i>Ganando</span><span><i style="background:#e66767"></i>En pérdida</span></div>
+      </div>
+      <div class="lx-rows" id="success-list" role="list" data-source="success"></div>
     </div>
   </section>
 
@@ -171,11 +248,12 @@ html, body { margin: 0; background: #0b0e14; }
       <li>Retorno de cada idea = (valor actual + lo cobrado en ventas − lo invertido) / lo invertido. Una idea vendida, como AMD, queda con el precio de venta, no con el precio de hoy.</li>
       <li>Retorno de las ideas: (lo que valen hoy las ideas que no se han vendido + lo cobrado en las ventas − lo invertido) / lo invertido.</li>
       <li>S&amp;P 500 y QQQ: se compran $100 de SPY y $100 de QQQ el primer día hábil de cada semana, desde el día de la primera idea. Rentabilidad = (valor de hoy − lo invertido) / lo invertido, sin dividendos.</li>
+      <li>Éxito de las ideas: una idea es rentable cuando su retorno total es mayor a cero hoy. El tiempo hasta ser rentable son los días entre la primera compra y el día en que la idea quedó en positivo sin volver a pérdida. La rentabilidad promedio es el promedio simple del retorno de cada idea.</li>
       <li>Precios de cierre diarios de Yahoo Finance; el valor de hoy usa el último cierre disponible.</li>
       <li>Contenido educativo, no es recomendación de inversión.</li>
     </ul>
   </section>
-  <p class="lx-foot">Precios de cierre de Yahoo Finance, actualizados automáticamente cada día hábil. Último cierre: <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span>.</p>
+  <div class="lx-foot"><span>El León de Wall Street · Ideas en vivo</span><span>Precios de cierre de Yahoo Finance, actualizados cada día hábil. Último cierre: <span data-source="summary" data-field="asof" data-where="series=portfolio" data-fmt="date"></span></span></div>
 </div>
 </div>
 
@@ -183,7 +261,7 @@ html, body { margin: 0; background: #0b0e14; }
 // Mini runtime: carga los CSV de /data y calcula todo en el navegador.
 window.dash = (() => {
   const state = {}, calcs = [], subs = [];
-  const colors = ['#f2c14e', '#7cb2ff', '#c792ea'];
+  const colors = ['#3987e5', '#d95926', '#199e70'];
   const run = () => subs.forEach((fn) => { try { fn(); } catch (e) { console.error(e); } });
   const data = (id) => state[id] || {status: 'loading', data: []};
   const load = async () => {
@@ -218,7 +296,7 @@ const fmt = {
   pct: d3.format('+.1%'), usd: d3.format('$,.2f'), usd0: d3.format('$,.0f'),
   susd: d3.format('+$,.2f'), date: fDate,
 };
-const COLORS = ['#f2c14e', '#7cb2ff', '#c792ea'];
+const COLORS = ['#3987e5', '#d95926', '#199e70'];
 const SER = [
   {key: 'portfolio', name: 'Ideas de El León', color: 0, w: 2.5},
   {key: 'spy', name: 'S&P 500', color: 1, w: 1.8},
@@ -319,6 +397,35 @@ dash.calc('summary', {
 },
 });
 
+dash.calc('success', {
+  inputs: ['prices', 'trades'],
+  title: 'Éxito de las ideas',
+  description: 'Por idea: retorno total y días que tardó en quedar en verde sin volver a pérdida.',
+  fn: (prices, trades) => {
+  const num = (x) => (x === '' || x == null ? null : Number(x));
+  const days = [...prices].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const ts = [...trades].sort((a, b) => (a.date + a.id < b.date + b.id ? -1 : 1));
+  const diff = (a, b) => Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5);
+  return [...new Set(ts.map((t) => t.ticker))].map((k) => {
+    const mine = ts.filter((t) => t.ticker === k), first = mine[0].date;
+    let sh = 0, inv = 0, real = 0, i = 0, since = null, ret = 0, open = false;
+    for (const p of days) {
+      if (p.date < first) continue;
+      while (i < mine.length && mine[i].date <= p.date) {
+        const t = mine[i++], px = num(t.price);
+        if (t.side === 'buy') { sh += num(t.usd) / px; inv += num(t.usd); }
+        else { const q = num(t.fraction) != null ? sh * num(t.fraction) : num(t.usd) / px; sh -= q; real += q * px; }
+      }
+      open = sh > 1e-9;
+      ret = ((open ? sh * num(p[k]) : 0) + real - inv) / inv;
+      if (ret > 0) since = since || p.date; else since = null;
+    }
+    const profitable = ret > 0;
+    return {ticker: k, first_date: first, status: open ? 'abierta' : 'vendida', ret, profitable, since: profitable ? since : null, days: profitable ? diff(first, since) : null};
+  });
+},
+});
+
 function fillMarks() {
   root.querySelectorAll('[data-fmt]').forEach((el) => {
     const d = dash.data(el.dataset.source);
@@ -363,7 +470,7 @@ function drawPositions() {
   tb.replaceChildren(...[...dash.data('positions').data].sort((a, b) => b.ret - a.ret).map((r) => {
     const tr = document.createElement('tr');
     tr.dataset.key = r.ticker;
-    td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
+    td(tr, r.ticker).style.fontWeight = '600';
     td(tr, r.held ? 'Sí' : 'No', r.held ? 'pos' : '');
     td(tr, fmt.usd(r.avg_cost), 'n');
     td(tr, fDate(r.first_date));
@@ -392,8 +499,64 @@ function drawPositions() {
   td(tr, fmt.susd(pf.pnl), signCls(pf.pnl));
   td(tr, fmt.pct(pf.ret), signCls(pf.ret));
   td(tr, '100.0%', 'n');
-  tr.querySelectorAll('td').forEach((c) => (c.style.fontWeight = 'var(--cds-font-weight-medium)'));
+  tr.querySelectorAll('td').forEach((c) => (c.style.fontWeight = '600'));
   ft.replaceChildren(tr);
+}
+
+function drawSuccess() {
+  const list = document.getElementById('success-list');
+  if (anyErr('success')) return failBox(list, 'No se pudieron cargar los datos');
+  if (!okAll('success')) return;
+  const rows = [...dash.data('success').data].sort((a, b) => b.ret - a.ret);
+  if (!rows.length) return;
+  const fDays = (d) => (d === 0 ? 'Desde el primer día' : d === 1 ? '1 día' : d + ' días');
+  const set = (id, text, signed) => {
+    const e = document.getElementById(id);
+    e.classList.remove('dash-skeleton');
+    e.textContent = text;
+    if (signed != null) { e.classList.toggle('pos', signed >= 0); e.classList.toggle('neg', signed < 0); }
+  };
+  const wins = rows.filter((r) => r.profitable), n = rows.length;
+  const avg = d3.mean(rows, (r) => r.ret), med = d3.median(rows, (r) => r.ret);
+  const ds = wins.map((r) => r.days);
+  const best = rows[0], worst = rows[n - 1];
+  set('s-win', `${wins.length} de ${n}`);
+  set('s-win-sub', `${d3.format('.0%')(wins.length / n)} de las ideas está en verde`);
+  set('s-avg', fmt.pct(avg), avg);
+  set('s-avg-sub', `Mediana ${fmt.pct(med)}`);
+  if (ds.length) {
+    set('s-days', `${Math.round(d3.median(ds))} días`);
+    set('s-days-sub', `Mediana de las ideas rentables · promedio ${Math.round(d3.mean(ds))} días`);
+  } else { set('s-days', '-'); set('s-days-sub', 'Aún no hay ideas rentables'); }
+  set('s-best', fmt.pct(best.ret), best.ret);
+  document.getElementById('s-best-name').textContent = `Mejor idea · ${best.ticker}`;
+  set('s-best-sub', `Peor: ${worst.ticker} ${fmt.pct(worst.ret)}`);
+
+  const maxPos = Math.max(0, d3.max(rows, (r) => r.ret)), maxNeg = Math.max(0, -d3.min(rows, (r) => r.ret));
+  const span = (maxPos + maxNeg) || 1, zero = maxNeg / span * 100;
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const head = el('div', 'lx-rhead');
+  head.append(el('span', '', 'Idea'), el('span', '', 'Rentabilidad'), el('span', 'r', ''), el('span', 'w', 'Tardó en ser rentable'));
+  const items = rows.map((r) => {
+    const row = el('div', 'lx-row');
+    row.setAttribute('role', 'listitem');
+    row.title = `${r.ticker}: ${fmt.pct(r.ret)}. Primera compra ${fDate(r.first_date)}.` + (r.profitable ? ` Rentable desde el ${fDate(r.since)}.` : ' Hoy en pérdida.');
+    const name = el('div', 'lx-rname', r.ticker);
+    if (r.status === 'vendida') name.append(el('span', 'lx-tag', 'vendida'));
+    const track = el('div', 'lx-rtrack');
+    const zl = el('div', 'lx-rzero'); zl.style.left = zero.toFixed(2) + '%'; track.append(zl);
+    const bar = el('div', 'lx-rbar ' + (r.ret >= 0 ? 'up' : 'dn'));
+    const w = Math.abs(r.ret) / span * 100;
+    bar.style.width = w.toFixed(2) + '%';
+    bar.style.left = (r.ret >= 0 ? zero : zero - w).toFixed(2) + '%';
+    track.append(bar);
+    const val = el('div', 'lx-rval ' + (r.ret >= 0 ? 'pos' : 'neg'), fmt.pct(r.ret));
+    const when = el('div', 'lx-rwhen' + (r.profitable ? '' : ' no'), r.profitable ? fDays(r.days) : 'Aún en pérdida');
+    const rowEls = [name, track, val, when];
+    row.append(...rowEls);
+    return row;
+  });
+  list.replaceChildren(head, ...items);
 }
 
 function drawTrades() {
@@ -409,7 +572,7 @@ function drawTrades() {
     tr.dataset.key = r.id;
     td(tr, r.id);
     td(tr, fDate(r.date));
-    td(tr, r.ticker).style.fontWeight = 'var(--cds-font-weight-medium)';
+    td(tr, r.ticker).style.fontWeight = '600';
     const buy = r.side === 'buy';
     td(tr, buy ? 'Compra' : 'Venta', buy ? 'pos' : 'neg');
     td(tr, fmt.usd(Number(r.price)), 'n');
@@ -526,6 +689,7 @@ document.getElementById('trade-q').addEventListener('input', drawTrades);
 dash.onData(() => {
   fillMarks();
   drawPositions();
+  drawSuccess();
   drawTrades();
   drawChart();
 });
